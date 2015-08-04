@@ -1,5 +1,5 @@
 #include "rippleDeformer.h"
-
+#include "math.h"
 
 MTypeId RippleDeformer::id(0x00000424);
 MObject RippleDeformer::aAmplitude;
@@ -28,32 +28,41 @@ MStatus RippleDeformer::deform(MDataBlock& dataBlock,
 								unsigned int geomIndex)
 {
 	MStatus status;
+	
 	//get attriubtes as a datahandle
 	float env = dataBlock.inputValue(envelope).asFloat();
 	float amplitude = dataBlock.inputValue(aAmplitude).asFloat();
 	float displace = dataBlock.inputValue(aDisplace).asFloat();
 	//get the mesh 
-	
-	MDataHandle hinMesh = dataBlock.inputValue(inMesh);
-	//get vertex normals so we can deform along them 
-	MVector mNormalVectorArray;
-	hinMesh.getVertexNormals(false, mNormalVectorArray, MSpace.kObject);
+	//retrieve the handle to the input attribute
+	MArrayDataHandle hInput = dataBlock.outputArrayValue(input, &status);
+	//get the input array index handle
+	status = hInput.jumpToElement(geomIndex);
+	//get the handle of geomIndex attribute
+	MDataHandle hInputElement = hInput.outputValue(&status);
+	//Get the MObject of the input geometry of geomindex
+	MObject oInputGeom = hInputElement.child(inputGeom).asMesh();
+
+	MFnMesh fnMesh(oInputGeom, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	MFloatVectorArray normals;
+	fnMesh.getVertexNormals(false, normals);
+
 
 	MPoint pointPos;
 	float weight;
-
 	for (; !itGeo.isDone(); itGeo.next())
 	{
 		//get current point position
 		pointPos = itGeo.position();
 		weight = weightValue(dataBlock, geomIndex, itGeo.index());
-		pointPos.x = pointPos.x + sin(itGeo.index() + displace) * amplitude * mNormalVectorArray[itGeo.index()].x * weight * envelope;
-		pointPos.y = pointPos.y + sin(itGeo.index() + displace) * amplitude * mNormalVectorArray[itGeo.index()].y * weight * envelope;
-		pointPos.z = pointPos.z + sin(itGeo.index() + displace) * amplitude * mNormalVectorArray[itGeo.index()].z * weight * envelope;
+		pointPos.x = pointPos.x + sin(itGeo.index() + displace) * amplitude * normals[itGeo.index()].x * weight * env;
+		pointPos.y = pointPos.y + sin(itGeo.index() + displace) * amplitude * normals[itGeo.index()].y * weight * env;
+		pointPos.z = pointPos.z + sin(itGeo.index() + displace) * amplitude * normals[itGeo.index()].z * weight * env;
 		//setPosition
 		itGeo.setPosition(pointPos);
 	}	
-
+	
 	return MS::kSuccess;
 }
 
@@ -61,6 +70,7 @@ MStatus RippleDeformer::deform(MDataBlock& dataBlock,
 MStatus RippleDeformer::initalize()
 {
 	MStatus status;
+	
 	MFnNumericAttribute nAttr;
 	
 	aAmplitude = nAttr.create("amplitude","amp", MFnNumericData::kFloat, 0.0);
@@ -74,6 +84,7 @@ MStatus RippleDeformer::initalize()
 	attributeAffects(aDisplace, outputGeom);
 
 	MGlobal::executeCommand("makePaintable -attrType multiFloat -sm deformer rippleDeformer");
+	
 	return MS::kSuccess;
 }
 
