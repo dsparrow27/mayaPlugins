@@ -1,5 +1,5 @@
 #include "sphereCollider.h"
-#include <IOSTREAM>
+
 
 MTypeId	SphereCollider::id(0x00000125);
 MObject SphereCollider::aCollideMatrix;
@@ -7,12 +7,10 @@ MObject SphereCollider::aDisplace;
 
 SphereCollider::SphereCollider()
 {
-
 }
 
 SphereCollider::~SphereCollider()
 {
-
 }
 
 void* SphereCollider::creator()
@@ -27,6 +25,9 @@ MObject& SphereCollider::accessoryAttribute() const
 
 MStatus	SphereCollider::accessoryNodeSetup(MDagModifier& dagMod)
 {
+	/* Create a space locator automaticlly when node gets created,
+	gets deleted with the deformer
+	*/
 	MStatus status;
 
 	MObject oLocator = dagMod.createNode("locator", MObject::kNullObj, &status);
@@ -57,26 +58,26 @@ MStatus SphereCollider::deform(MDataBlock& dataBlock,
 								unsigned int geoIndex)
 {
 	MStatus status;
+	//retrieve attribute values 
 	float env = dataBlock.inputValue(envelope).asFloat();
 	float displace = dataBlock.inputValue(aDisplace).asFloat();
 	MMatrix colliderMatrix = dataBlock.inputValue(aCollideMatrix).asMatrix();
+	//get the matrix information from the collider plug
 	MMatrix collideInverseMatrix = colliderMatrix.inverse();
 	MMatrix worldToLocalMatrix = localToWorldMatrix.inverse();
 	
+	//vert position variable
 	MPoint point;
 
-	float w;
+	//used for weights
+	//float w;
 
-	
 	for (; !itGeo.isDone(); itGeo.next())
 	{
-
-		point = itGeo.position();
-		MMatrix origPoint = colliderMatrix * worldToLocalMatrix;
-		//get the vertex weight value
+		/*getting the vertex weight but still need to calculate for final position
 		w = weightValue(dataBlock, geoIndex, itGeo.index());
-
-
+		*/
+		point = itGeo.position();
 
 		//local to world space calculation per point
 		point = (point * localToWorldMatrix) * collideInverseMatrix;
@@ -93,9 +94,9 @@ MStatus SphereCollider::deform(MDataBlock& dataBlock,
 				point.z *= displace;
 			}
 		}
+		//get back to local space before setting position
 		point *= (colliderMatrix * worldToLocalMatrix);
 		
-
 		itGeo.setPosition(point);
 
 	}
@@ -105,6 +106,9 @@ MStatus SphereCollider::deform(MDataBlock& dataBlock,
 
 MStatus SphereCollider::initialize()
 {
+	/* 
+	Defines the attributes and their settings for the collider node.
+	*/
 	MStatus status;
 	MFnMatrixAttribute mAttr;
 	MFnNumericAttribute nAttr;
@@ -118,6 +122,7 @@ MStatus SphereCollider::initialize()
 	addAttribute(aDisplace);
 	attributeAffects(aDisplace, outputGeom);
 	
+	// currently not part of the math 
 	MGlobal::executeCommand("makePaintable -attrType multiFloat -sm deformer sphereCollide weights");
 	return MS::kSuccess;
 }

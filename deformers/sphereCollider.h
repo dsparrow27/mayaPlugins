@@ -1,3 +1,6 @@
+/* experiment doing a collision deformer similiar to maya sculpt deformer.
+
+*/
 #ifndef SPHERECOLLIDER_H
 #define SPHERECOLLIDER_H
 
@@ -9,8 +12,6 @@
 #include <maya/MGlobal.h>
 #include <maya/MMatrix.h>
 #include <maya/MItGeometry.h>
-#include <maya/MDataHandle.h>
-#include <maya/MDataBlock.h>
 #include <maya/MPoint.h>
 
 
@@ -20,7 +21,7 @@ public:	SphereCollider();
 		virtual			~SphereCollider();
 
 		static void* creator();
-
+		//main deformation function
 		virtual	MStatus deform(MDataBlock& dataBlock,
 								MItGeometry& itGeo,
 								const MMatrix& localToWorldMatrix,
