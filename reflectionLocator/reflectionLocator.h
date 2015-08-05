@@ -27,7 +27,7 @@ public:	ReflectionLocator();
 		virtual	MStatus compute(const MPlug& plug, MDataBlock& dataBlock);
 
 		//draw function for all openGl calulations 
-		virtual void	draw(M3dView&, const MDagPath&, M3dView::DisplayStyle, M3dView::DisplayStyle);
+		virtual void	draw(M3dView& view, const MDagPath&, M3dView::DisplayStyle style, M3dView::DisplayStatus status);
 		virtual			isBound() const;
 		virtual			isTransparent() const;
 		virtual	MBoundingBox	boundingBox() const;
@@ -50,8 +50,8 @@ public:	ReflectionLocator();
 
 
 private:
-	//
-	MPoint mSrcPoint, mDestPoint, mPlanePoibnt;
+	//for storing points for openGl access
+	MPoint mSrcPoint, mDestPoint, mPlanePoint;
 
 
 };

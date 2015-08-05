@@ -49,14 +49,45 @@ MStatus ReflectionLocator::compute(const MPlug& plug, MDataBlock& dataBlock)
 	MVector V = inputPoint - planePos;
 
 	//Reflected vector
-	MVector R = 2 * ((normal * V) * normal) - V;
+	MVector r = 2 * ((normal * V) * normal) - V;
+	r.normalize();
+	r *= scale;
 
 	//reflected point position
-	mDestPoint = planePos + R;
-		
+	mDestPoint = planePos + r;
+
+	//place into localSpace
+	mDestPoint *= reflectedParentInverse;
+
+	//setOutput
+	MDataHandle hOutput = dataBlock.outputValue(aReflectedPoint);
+	hOutput.set3Float((float)mDestPoint.x, (float)mDestPoint.y, (float)mDestPoint.z);
+	hOutput.setClean();
+	dataBlock.setClean(plug);
 	
-	
-	
+	//setup points for openGl(being in objectSpace)
+	MMatrix planeMatrixInverse = planeMatrix.inverse();
+	mSrcPoint = MPoint(inputPoint) * planeMatrixInverse;
+	mPlanePoint = MPoint(planePos) * planeMatrixInverse;
+	mDestPoint *= planeMatrixInverse;
+
 	return MS::kSuccess;
+
+}
+
+
+void ReflectionLocator::draw(M3dView& view,
+							const MDagPath&,
+							M3dView::DisplayStyle style,
+							M3dView::DisplayStatus status)
+{
+	//glStart
+	view.beginGL();
+	//setup states
+	glPushAttrib(GL_CURRENT_BIT);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthMask(GL_FALSE);
+
 
 }
