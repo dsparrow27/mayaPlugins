@@ -8,7 +8,7 @@
 #include <maya/MDataBlock.h>
 #include <maya/M3dView.h>
 #include <maya/MBoundingBox.h>
-
+#include <maya/MFloatPointArray.h>
 
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnMatrixAttribute.h>
