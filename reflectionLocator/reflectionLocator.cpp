@@ -89,5 +89,39 @@ void ReflectionLocator::draw(M3dView& view,
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthMask(GL_FALSE);
 
+	//setup for draw colors for maya(active, lead etc)
+	MColor solidColor, wireColor;
+	if (status == M3dView::kActive)
+	{
+		//white
+		solidColor = MColor(1.0f, 1.0f, 1.0f, 0.1f);
+		wireColor = MColor(1.0f, 1.0f, 1.0f, 1.0f);
+	}
+	else if (status == M3dView::kLead)
+	{
+		//green
+		solidColor = MColor(0.26f, 1.0f, 0.64f, 0.1f);
+		wireColor = MColor(0.26f, 1.0f, 0.64f, 1.0f);
+	}
+	else
+	{
+		//blue
+		solidColor = MColor(0.26f, 1.0f, 0.0f, 0.1f);
+		wireColor = MColor(0.26f, 1.0f, 0.0f, 1.0f);
+	}
+
+	//draw the disc 
+	glColor4f(solidColor.r, solidColor.g, solidColor.b, solidColor.a);
+	drawDisc(1.0f, 32, true);
+
+	//wireFrames
+	glColor4f(wireColor.r, wireColor.g, wireColor.b, wireColor.a);
+	drawReflection(mSrcPoint, mDestPoint);
+	drawDisc(1.0f, 32, false);
+
+	glDepthMask(GL_TRUE);
+	glDisable(GL_BLEND);
+	glPopAttrib();
+	view.endGL();
 
 }
