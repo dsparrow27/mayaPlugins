@@ -1,5 +1,5 @@
 #include "bulgeDeformer.h"
-#include <IOSTREAM>
+
 MTypeId	BulgeDeformer::id(0x00000124);
 MObject BulgeDeformer::aBulgeAmount;
 

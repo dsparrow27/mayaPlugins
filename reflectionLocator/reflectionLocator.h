@@ -19,7 +19,7 @@ class ReflectionLocator : public MPxDeformerNode
 {
 public:	ReflectionLocator();
 
-		virtual void*	postConstructor();
+		virtual void	postConstructor();
 		virtual			~ReflectionLocator();
 		
 		
@@ -39,10 +39,19 @@ public:	ReflectionLocator();
 		//standard node creation function
 		static void* creator();
 		static MStatus initialize();
-
+		// node id 
 		static MTypeId id;
-		static
+		//attribute values that get accessed in the compute function
+		static MObject aPlaneMatrix;
+		static MObject aPoint;
+		static MObject aReflectedPoint;
+		static MObject aReflectionMatrix;
+		static MObject aScale;
 
+
+private:
+	//
+	MPoint mSrcPoint, mDestPoint, mPlanePoibnt;
 
 
 };
