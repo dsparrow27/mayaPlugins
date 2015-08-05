@@ -1,6 +1,7 @@
 /*
-strip down version of a blendshape deformer(bare bones)only taking in one shape,
-this needs and will be changed at some chances are instead of doing an additive deformer 
+Strip down version of a blendshape deformer(bare bones)only taking in one shape,
+For learning purpose's im starting from scratch with MPXDeformerNode class.
+This will be changed at some chances are instead of doing an additive deformer 
 it'll be averging but this of coarse will take some time to support.
 
 */

@@ -1,0 +1,13 @@
+*.sdf
+*.sln
+*.suo
+*.opensdf
+*.filters
+*.vcxproj
+*.pdb
+*.log
+*.obj
+*.idb
+*.exp
+*.tlog
+*.lastbuildstate
