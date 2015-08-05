@@ -147,6 +147,7 @@ void ReflectionLocator::drawDisc(float radius, int divisions, bool filled)
 	glBegin(renderState);
 	for (int i = 0; i < divisions; i++)
 	{
+		//use x,z from previous math to draw each vertex
 		glVertex3f(points[i].x, 0.0f, points[i].y);
 	}
 	glEnd();
