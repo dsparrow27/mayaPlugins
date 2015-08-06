@@ -1,21 +1,27 @@
 /* 
+Custom Locator that will reflect a matrix from a plane
+Currently doesn't support viewport 2.0
 */
 #ifndef REFLECTIONLOCATOR_H
 #define REFLECTIONLOCATOR_H
 
-#include <maya/MPxDeformerNode.h>
 #include <maya/MMatrix.h>
+#include <maya/MVector.h>
+#include <maya/MPoint.h>
+#include <maya/MDataHandle.h>
 #include <maya/MDataBlock.h>
 #include <maya/M3dView.h>
 #include <maya/MBoundingBox.h>
 #include <maya/MFloatPointArray.h>
 
-#include <maya/MFnNumericAttribute.h>
+#include <maya/MFnDependencyNode.h>
+#include <maya/MPxLocatorNode.h>
 #include <maya/MFnMatrixAttribute.h>
+#include <maya/MFnNumericAttribute.h>
 
 
 
-class ReflectionLocator : public MPxDeformerNode
+class ReflectionLocator : public MPxLocatorNode
 {
 public:	ReflectionLocator();
 
@@ -28,8 +34,8 @@ public:	ReflectionLocator();
 
 		//draw function for all openGl calulations 
 		virtual void	draw(M3dView& view, const MDagPath&, M3dView::DisplayStyle style, M3dView::DisplayStatus status);
-		virtual			isBound() const;
-		virtual			isTransparent() const;
+		virtual	bool		isBounded() const;
+		virtual	bool		isTransparent() const;
 		virtual	MBoundingBox	boundingBox() const;
 
 		// openGl code for a disc shape
@@ -45,7 +51,7 @@ public:	ReflectionLocator();
 		static MObject aPlaneMatrix;
 		static MObject aPoint;
 		static MObject aReflectedPoint;
-		static MObject aReflectionMatrix;
+		static MObject aReflectedParentInverse;
 		static MObject aScale;
 
 

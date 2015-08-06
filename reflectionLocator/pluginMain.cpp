@@ -13,7 +13,7 @@ MStatus initializePlugin(MObject obj)
 		ReflectionLocator::id,
 		ReflectionLocator::creator,
 		ReflectionLocator::initialize,
-		MPxNode::kDeformerNode);
+		MPxNode::kLocatorNode);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	return MS::kSuccess;
