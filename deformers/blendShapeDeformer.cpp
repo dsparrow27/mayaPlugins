@@ -1,7 +1,7 @@
 #include "blendShapeDeformer.h"
 
 
-MTypeId	BlendShapeDeformer::id(0x00000123);
+MTypeId	BlendShapeDeformer::id(0x00124501);
 MObject BlendShapeDeformer::aBlendMesh;
 MObject BlendShapeDeformer::aBlendWeight;
 

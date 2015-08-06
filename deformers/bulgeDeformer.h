@@ -1,5 +1,3 @@
-/*Real basic bulge deformer that pushes verts along their normal by given amount*/
-
 #ifndef BULGEDEFORMER_H
 #define BULGEDEFORMER_H
 

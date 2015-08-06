@@ -1,9 +1,10 @@
 #ifndef RIPPLEDEFORMER_H
 #define RIPPLEDEFORMER_H
 
-
+#include <math.h>
 #include <maya/MPxDeformerNode.h>
 #include <maya/MFnNumericAttribute.h>
+#include <maya/MDataBlock.h>
 #include <maya/MItGeometry.h>
 #include <maya/MMatrix.h>
 #include <maya/MGlobal.h>
@@ -11,8 +12,6 @@
 #include <maya/MDataHandle.h>
 #include <maya/MVector.h>
 #include <maya/MPoint.h>
-#include <maya/MFnMesh.h>
-#include <maya/MFloatVectorArray.h>
 
 
 

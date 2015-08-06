@@ -1,6 +1,6 @@
 #include "bulgeDeformer.h"
-
-MTypeId	BulgeDeformer::id(0x00000124);
+#include <IOSTREAM>
+MTypeId	BulgeDeformer::id(0x00124502);
 MObject BulgeDeformer::aBulgeAmount;
 
 
@@ -46,6 +46,7 @@ MStatus BulgeDeformer::deform(MDataBlock& dataBlock,
 	MPoint point;
 	//weights
 	float w;
+
 	for (; !itGeo.isDone(); itGeo.next())
 	{
 		w = weightValue(dataBlock, geomIndex, itGeo.index());
@@ -53,7 +54,7 @@ MStatus BulgeDeformer::deform(MDataBlock& dataBlock,
 		//deform
 		point += normals[itGeo.index()] * bulgeAmount * w * env;
 		point += normals[itGeo.index()] * (bulgeAmount);
-		
+		std::cout << point << endl;
 		itGeo.setPosition(point);
 	}
 

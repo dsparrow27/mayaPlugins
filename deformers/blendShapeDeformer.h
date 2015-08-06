@@ -1,10 +1,3 @@
-/*
-Strip down version of a blendshape deformer(bare bones)only taking in one shape,
-For learning purpose's im starting from scratch with MPXDeformerNode class.
-This will be changed at some chances are instead of doing an additive deformer 
-it'll be averging but this of coarse will take some time to support.
-
-*/
 #ifndef BLENDSHAPEDEFORMER_H
 #define BLENDSHAPEDEFORMER_H
 
@@ -18,6 +11,7 @@ it'll be averging but this of coarse will take some time to support.
 #include <maya/MItGeometry.h>
 #include <maya/MDataHandle.h>
 #include <maya/MDataBlock.h>
+
 
 
 class BlendShapeDeformer : public MPxDeformerNode
