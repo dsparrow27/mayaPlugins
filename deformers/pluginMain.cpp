@@ -1,6 +1,7 @@
 #include "bulgeDeformer.h"
 #include "blendShapeDeformer.h"
 #include "dsSculptDeformer.h"
+#include "rippleDeformer.h"
 #include <maya/MFnPlugin.h>
 
 
@@ -31,6 +32,12 @@ MStatus initializePlugin(MObject obj)
 		MPxNode::kDeformerNode);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	
+	status = fnplugin.registerNode("rippleDeformer",
+		RippleDeformer::id,
+		RippleDeformer::creator,
+		RippleDeformer::initialize,
+		MPxNode::kDeformerNode);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	return MS::kSuccess;
 
@@ -45,11 +52,16 @@ MStatus uninitializePlugin(MObject obj)
 	//deregister the deformerNode
 	status = plugin.deregisterNode(BulgeDeformer::id);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
+
 	status = plugin.deregisterNode(BlendShapeDeformer::id);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	
 	status = plugin.deregisterNode(DsSculptDeformer::id);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	status = plugin.deregisterNode(RippleDeformer::id);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
 	
 	return MS::kSuccess;
 
