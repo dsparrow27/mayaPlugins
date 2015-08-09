@@ -96,7 +96,7 @@ MStatus DsSculptDeformer::deform(MDataBlock& dataBlock,
 		}
 		//get back to local space before setting position
 		point *= (colliderMatrix * worldToLocalMatrix);
-
+		
 		itGeo.setPosition(point);
 
 	}

@@ -35,9 +35,7 @@ public:
 
 	static MObject	aAmplitude;
 	static MObject	aDisplace;
-	//static MObject  aAffectX;
-	//static MObject  aAffectY;
-	//static MObject  aAffectZ;
+
 };
 
 #endif // !RIPPLEDEFORMER_H

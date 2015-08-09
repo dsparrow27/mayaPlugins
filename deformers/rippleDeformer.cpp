@@ -4,9 +4,6 @@
 MTypeId RippleDeformer::id(0x00124504);
 MObject RippleDeformer::aAmplitude;
 MObject RippleDeformer::aDisplace;
-//MObject RippleDeformer::aAffectX;
-//MObject RippleDeformer::aAffectY;
-//MObject RippleDeformer::aAffectZ;
 
 
 RippleDeformer::RippleDeformer()
@@ -50,6 +47,11 @@ MStatus RippleDeformer::deform(MDataBlock& dataBlock,
 
 	MFnMesh fnMesh(oInputGeom, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
+	if (oInputGeom.isNull())
+	{
+		return MS::kSuccess;
+	}
+
 	MFloatVectorArray normals;
 	fnMesh.getVertexNormals(false, normals);
 
