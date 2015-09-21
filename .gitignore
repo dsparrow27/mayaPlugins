@@ -160,6 +160,7 @@ ClientBin/
 *.publishsettings
 *.vcxproj
 *.vcxproj.filters
+*.filters
 *.sln
 *.suo
 node_modules/
