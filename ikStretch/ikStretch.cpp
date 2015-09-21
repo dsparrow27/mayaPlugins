@@ -33,122 +33,123 @@ MStatus IkStretch::compute(const MPlug& plug, MDataBlock& dataBlock)
 {
 	MStatus	status;
 
-	if (plug != aUpScale || (plug != aDownScale))
+	if (plug == aUpScale || (plug == aDownScale))
 	{
-		return MS::kSuccess;
-	}
-	// get the input matrices
-	MMatrix startMatrixV = dataBlock.inputValue(aStartMatrix).asMatrix();
-	MMatrix endMatrixV = dataBlock.inputValue(aEndMatrix).asMatrix();
-	MMatrix poleVectormatrixV = dataBlock.inputValue(aPoleVectorMatrix).asMatrix();
-	// get the inital bone input lengths 
-	double upInitLengthV = dataBlock.inputValue(aUpInitLength).asDouble();
-	double downInitLengthV = dataBlock.inputValue(aDownInitLength).asDouble();
-	//get all parameter inputs
-	double stretchV = dataBlock.inputValue(aStretch).asDouble();
-	double upStretchV = dataBlock.inputValue(aUpStretch).asDouble();
-	double downStretchV = dataBlock.inputValue(aDownStretch).asDouble();
-	double slideV = dataBlock.inputValue(aSlide).asDouble();
-	double globalScaleV = dataBlock.inputValue(aGlobalScale).asDouble();
-	double poleVectorLockV = dataBlock.inputValue(aPoleVectorLock).asDouble();
 
-	//compute the total chain length (original)
-	double chainLength = upInitLengthV + downInitLengthV;
+		// get the input matrices
+		MMatrix startMatrixV = dataBlock.inputValue(aStartMatrix).asMatrix();
+		MMatrix endMatrixV = dataBlock.inputValue(aEndMatrix).asMatrix();
+		MMatrix poleVectormatrixV = dataBlock.inputValue(aPoleVectorMatrix).asMatrix();
+		// get the inital bone input lengths 
+		double upInitLengthV = dataBlock.inputValue(aUpInitLength).asDouble();
+		double downInitLengthV = dataBlock.inputValue(aDownInitLength).asDouble();
+		//get all parameter inputs
+		double stretchV = dataBlock.inputValue(aStretch).asDouble();
+		double upStretchV = dataBlock.inputValue(aUpStretch).asDouble();
+		double downStretchV = dataBlock.inputValue(aDownStretch).asDouble();
+		double slideV = dataBlock.inputValue(aSlide).asDouble();
+		double globalScaleV = dataBlock.inputValue(aGlobalScale).asDouble();
+		double poleVectorLockV = dataBlock.inputValue(aPoleVectorLock).asDouble();
 
-
-	//compute the bone vectors
-	MVector startVector(startMatrixV[3][0], startMatrixV[3][1], startMatrixV[3][2]);
-	MVector endVector(endMatrixV[3][0], endMatrixV[3][1], endMatrixV[3][2]);
-	MVector currentLengthVector = endVector - startVector;
-
-	//compute length vector 
-	chainLength *= globalScaleV;
-	double currentLength = currentLengthVector.length();
+		//compute the total chain length (original)
+		double chainLength = upInitLengthV + downInitLengthV;
 
 
-	//create needed output varible
-	double upScaleOut = upInitLengthV;
-	double downScaleOut = downInitLengthV;
-	double ratio, delta;
-	/*
-	Possible spot for smooth ik.
-	*/
+		//compute the bone vectors
+		MVector startVector(startMatrixV[3][0], startMatrixV[3][1], startMatrixV[3][2]);
+		MVector endVector(endMatrixV[3][0], endMatrixV[3][1], endMatrixV[3][2]);
+		MVector currentLengthVector = endVector - startVector;
 
-	if (stretchV > 0.001)
-	{
-		//get the ratio
-		delta = currentLength / chainLength;
-		// compute the stretch delta otherwise delta is 1
-		if (delta > 1)
+		//compute length vector 
+		chainLength *= globalScaleV;
+		double currentLength = currentLengthVector.length();
+
+
+		//create needed output varible
+		double upScaleOut = upInitLengthV;
+		double downScaleOut = downInitLengthV;
+		double ratio, delta;
+		/*
+		Possible spot for smooth ik.
+		*/
+
+		if (stretchV > 0.001)
 		{
-			delta = ((delta - 1) * stretchV) + 1;
+			//get the ratio
+			delta = currentLength / chainLength;
+			// compute the stretch delta otherwise delta is 1
+			if (delta > 1)
+			{
+				delta = ((delta - 1) * stretchV) + 1;
+			}
+			else
+			{
+				delta = 1;
+			}
+
+			upScaleOut *= delta;
+			downScaleOut *= delta;
+
+		}
+		/*
+			Calulate independent bone stretch for up and down bones,
+			We're keeping this seperate from the stretch factor condition as this give a bit
+			more flexibility for the user.
+			*/
+		if (upStretchV > 0)
+		{
+			upScaleOut *= upStretchV;
+		}
+		if (downStretchV > 0)
+		{
+			downScaleOut *= downStretchV;
+		}
+
+		//compute slide
+		if (slideV >= 0)
+		{
+			ratio = chainLength / upInitLengthV;
+			delta = (((ratio - 1) * slideV));
+			upScaleOut = (delta + 1) * upScaleOut;
+			downScaleOut = (1 - slideV) * downScaleOut;
 		}
 		else
 		{
-			delta = 1;
+			ratio = chainLength / downInitLengthV;
+			delta = (((ratio - 1) * -slideV));
+			downScaleOut = (delta + 1) * downScaleOut;
+			upScaleOut = (1 + slideV) * upScaleOut;
 		}
 
-		upScaleOut *= delta;
-		downScaleOut *= delta;
+		//elbow lock
+		if (poleVectorLockV > 0.001)
+		{
+			MVector polePos(poleVectormatrixV[3][0],
+				poleVectormatrixV[3][1],
+				poleVectormatrixV[3][2]);
+			//compute the length of the vector needed to snap
+			MVector startPole = polePos - startVector;
+			MVector endPole = endVector - polePos;
+			double startPosLen = startPole.length() / globalScaleV;
+			double endPosLen = endPole.length() / globalScaleV;
+
+			//linear interpolate
+			upScaleOut = (upScaleOut * (1 - poleVectorLockV)) + (startPosLen * poleVectorLockV);
+			downScaleOut = (downScaleOut * (1 - poleVectorLockV)) + (endPosLen * poleVectorLockV);
+
+		}
+
+
+		//output
+		dataBlock.outputValue(aDownScale).set(downScaleOut);
+		dataBlock.outputValue(aDownScale).setClean();
+		dataBlock.outputValue(aUpScale).set(upScaleOut);
+		dataBlock.outputValue(aUpScale).setClean();
 
 	}
-	/*
-		Calulate independent bone stretch for up and down bones,
-		We're keeping this seperate from the stretch factor condition as this give a bit 
-		more flexibility for the user.
-	*/
-	if (upStretchV > 0)
-	{
-		upScaleOut *= upStretchV ;
-	}
-	if (downStretchV > 0)
-	{
-		downScaleOut *= downStretchV;
-	}
-
-	//compute slide
-	if (slideV >= 0)
-	{
-		ratio = chainLength / upInitLengthV;
-		delta = (((ratio - 1) * slideV));
-		upScaleOut = (delta + 1) * upScaleOut;
-		downScaleOut = (1 - slideV) * downScaleOut;
-	}
-	else
-	{
-		ratio = chainLength / downInitLengthV;
-		delta = (((ratio - 1) * -slideV));
-		downScaleOut = (delta + 1) * downScaleOut;
-		upScaleOut = (1 + slideV) * upScaleOut;
-	}
-
-	//elbow lock
-	if (poleVectorLockV > 0.001)
-	{
-		MVector polePos(poleVectormatrixV[3][0],
-		poleVectormatrixV[3][1],
-		poleVectormatrixV[3][2]);
-		//compute the length of the vector needed to snap
-		MVector startPole = polePos - startVector;
-		MVector endPole = endVector - polePos;
-		double startPosLen = startPole.length() / globalScaleV;
-		double endPosLen = endPole.length() / globalScaleV;
-
-		//linear interpolate
-		upScaleOut = (upScaleOut * (1 - poleVectorLockV)) + (startPosLen * poleVectorLockV);
-		downScaleOut = (downScaleOut * (1 - poleVectorLockV)) + (endPosLen * poleVectorLockV);
-
-	}
-		
-
-	//output
-	dataBlock.outputValue(aDownScale).set(downScaleOut);
-	dataBlock.outputValue(aDownScale).setClean();
-	dataBlock.outputValue(aUpScale).set(upScaleOut);
-	dataBlock.outputValue(aUpScale).setClean();
-
 
 	return MS::kSuccess;
+
 }
 
 
