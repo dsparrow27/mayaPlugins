@@ -1,4 +1,4 @@
-#include "ikStretch.h"
+#include "aimConstraint.h"
 #include <maya/MFnPlugin.h>
 
 
@@ -10,9 +10,9 @@ MStatus initializePlugin(MObject obj)
 
 
 	status = fnplugin.registerNode("ikStretch", 
-		IkStretch::id,
-		IkStretch::creator,
-		IkStretch::initialize,
+		AimConstraint::id,
+		AimConstraint::creator,
+		AimConstraint::initialize,
 		MPxNode::kDependNode);
 
 	CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -29,7 +29,7 @@ MStatus uninitializePlugin(MObject obj)
 	MFnPlugin plugin(obj);
 
 	//deregister the node
-	status = plugin.deregisterNode(IkStretch::id);
+	status = plugin.deregisterNode(AimConstraint::id);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	return MS::kSuccess;
