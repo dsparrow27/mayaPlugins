@@ -64,6 +64,7 @@ _Chutzpah*
 ipch/
 *.aps
 *.ncb
+*.opensdf
 *.sdf
 *.cachefile
 
@@ -157,6 +158,11 @@ ClientBin/
 *.dbproj.schemaview
 *.pfx
 *.publishsettings
+*.vcxproj
+*.vcxproj.filters
+*.filters
+*.sln
+*.suo
 node_modules/
 
 # RIA/Silverlight projects
