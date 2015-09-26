@@ -6,6 +6,7 @@
 #include <maya/MDataHandle.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MFnNumericAttribute.h>
+#include <maya/MFnUnitAttribute.h>
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFnNurbsCurve.h>
 #include <maya/MPoint.h>
@@ -31,40 +32,41 @@ public:
 		/*
 			This is the x attribute of the input translate 
 		*/
-		static MObject inputTranslateX;
+		static MObject aInputTranslateX;
 		/*
 		This is the y attribute of the input translate
 		*/
-		static MObject inputTranslateY;
+		static MObject aInputTranslateY;
 		/*
 		This is the z attribute of the input translate
 		*/
-		static MObject inputTranslateZ;
+		static MObject aInputTranslateZ;
 		/*
 		This is the array attribute of the input translate
 		*/
-		static MObject inputTranslate;
+		static MObject aInputTranslate;
 
 		/*
 		This is the x attribute of the output rotate
 		*/
-		static MObject outputRotateX;
+		static MObject aOutputRotateX;
 		/*
 		This is the y attribute of the output rotate
 		*/
-		static MObject outputRotateY;
+		static MObject aOutputRotateY;
 		/*
 		This is the z attribute of the output rotate
 		*/
-		static MObject outputRotateZ;
+		static MObject aOutputRotateZ;
+		static MObject aOutputRotate;
 		/*
 		This is the input matrix used for the driver of the constraint
 		*/
-		static MObject driverMatrix;
+		static MObject aDriverMatrix;
 		/*
 		This is the input matrix used for the upVector of the constraint
 		*/
-		static MObject upVectorMatrix;
+		static MObject aUpVectorMatrix;
 
 };	
 
