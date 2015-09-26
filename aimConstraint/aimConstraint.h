@@ -28,6 +28,43 @@ public:
 public:
 		// node id 
 		static MTypeId id;
+		/*
+			This is the x attribute of the input translate 
+		*/
+		static MObject inputTranslateX;
+		/*
+		This is the y attribute of the input translate
+		*/
+		static MObject inputTranslateY;
+		/*
+		This is the z attribute of the input translate
+		*/
+		static MObject inputTranslateZ;
+		/*
+		This is the array attribute of the input translate
+		*/
+		static MObject inputTranslate;
+
+		/*
+		This is the x attribute of the output rotate
+		*/
+		static MObject outputRotateX;
+		/*
+		This is the y attribute of the output rotate
+		*/
+		static MObject outputRotateY;
+		/*
+		This is the z attribute of the output rotate
+		*/
+		static MObject outputRotateZ;
+		/*
+		This is the input matrix used for the driver of the constraint
+		*/
+		static MObject driverMatrix;
+		/*
+		This is the input matrix used for the upVector of the constraint
+		*/
+		static MObject upVectorMatrix;
 
 };	
 
