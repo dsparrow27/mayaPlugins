@@ -6,6 +6,7 @@ MTypeId AimConstraint::id(0x00124506);
 // node id 
 MObject AimConstraint::aInputTranslateX;
 MObject AimConstraint::aInputTranslateY;
+MObject AimConstraint::aInputTranslateZ;
 MObject AimConstraint::aInputTranslate;
 MObject AimConstraint::aOutputRotateX;
 MObject AimConstraint::aOutputRotateY;
