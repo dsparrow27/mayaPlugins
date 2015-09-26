@@ -13,6 +13,7 @@
 #include <maya/MMatrix.h>
 #include <maya/MVector.h>
 #include <maya/MFnMatrixAttribute.h>
+#include <maya/MEulerRotation.h>
 
 class AimConstraint : public MPxNode
 {
