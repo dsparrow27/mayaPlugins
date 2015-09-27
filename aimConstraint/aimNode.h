@@ -1,5 +1,5 @@
-#ifndef aimConstraint_H
-#define aimConstraint_H
+#ifndef aimNode_H
+#define aimNode_H
 
 #include <maya/MPxNode.h>
 #include <maya/MDataBlock.h>
@@ -7,15 +7,13 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnUnitAttribute.h>
-#include <maya/MFnTypedAttribute.h>
 #include <maya/MFnNurbsCurve.h>
-#include <maya/MPoint.h>
 #include <maya/MMatrix.h>
 #include <maya/MVector.h>
 #include <maya/MFnMatrixAttribute.h>
 #include <maya/MEulerRotation.h>
 
-class AimConstraint : public MPxNode
+class AimNode : public MPxNode
 {
 public:
 		//standard node creation functions
@@ -59,6 +57,9 @@ public:
 		This is the z attribute of the output rotate
 		*/
 		static MObject aOutputRotateZ;
+		/*
+		This is the array attribute of the output rotate
+		*/
 		static MObject aOutputRotate;
 		/*
 		This is the input matrix used for the driver of the constraint
@@ -71,4 +72,4 @@ public:
 
 };	
 
-#endif // !aimConstraint_H
+#endif // !aimNode_H

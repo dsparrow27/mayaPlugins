@@ -1,28 +1,28 @@
-#include "aimConstraint.h"
+#include "aimNode.h"
 
 
-MTypeId AimConstraint::id(0x00124506);
+MTypeId AimNode::id(0x00124506);
 
 // node id 
-MObject AimConstraint::aInputTranslateX;
-MObject AimConstraint::aInputTranslateY;
-MObject AimConstraint::aInputTranslateZ;
-MObject AimConstraint::aInputTranslate;
-MObject AimConstraint::aOutputRotateX;
-MObject AimConstraint::aOutputRotateY;
-MObject AimConstraint::aOutputRotateZ;
-MObject AimConstraint::aOutputRotate;
-MObject AimConstraint::aDriverMatrix;
-MObject AimConstraint::aUpVectorMatrix;
+MObject AimNode::aInputTranslateX;
+MObject AimNode::aInputTranslateY;
+MObject AimNode::aInputTranslateZ;
+MObject AimNode::aInputTranslate;
+MObject AimNode::aOutputRotateX;
+MObject AimNode::aOutputRotateY;
+MObject AimNode::aOutputRotateZ;
+MObject AimNode::aOutputRotate;
+MObject AimNode::aDriverMatrix;
+MObject AimNode::aUpVectorMatrix;
 
 
-void* AimConstraint::creator()
+void* AimNode::creator()
 {
-	return new AimConstraint();
+	return new AimNode();
 }
 
 
-MStatus AimConstraint::compute(const MPlug& plug, MDataBlock& dataBlock)
+MStatus AimNode::compute(const MPlug& plug, MDataBlock& dataBlock)
 {
 	MStatus	status;
 	if ((plug == aOutputRotate) || (plug == aOutputRotateX) ||
@@ -74,7 +74,7 @@ MStatus AimConstraint::compute(const MPlug& plug, MDataBlock& dataBlock)
 }
 
 
-MStatus AimConstraint::initialize()
+MStatus AimNode::initialize()
 {
 	MStatus status;
 	MFnNumericAttribute nAttr;
@@ -82,9 +82,15 @@ MStatus AimConstraint::initialize()
 	MFnUnitAttribute uAttr;
 
 	aDriverMatrix = mAttr.create("driverMatrix", "dvm");
+	mAttr.setStorable(true);
+	mAttr.setKeyable(true);
+	mAttr.setWritable(true);
 	addAttribute(aDriverMatrix);
 
 	aUpVectorMatrix = mAttr.create("upVectorMatrix", "uvm");
+	mAttr.setStorable(true);
+	mAttr.setKeyable(true);
+	mAttr.setWritable(true);
 	addAttribute(aUpVectorMatrix);
 
 	//translateX
@@ -122,7 +128,7 @@ MStatus AimConstraint::initialize()
 	nAttr.setWritable(true);
 	addAttribute(aOutputRotateY);
 	//rotateZ
-	aOutputRotateZ = uAttr.create("rotateX", "rz", MFnUnitAttribute::kAngle, 0);
+	aOutputRotateZ = uAttr.create("rotateZ", "rz", MFnUnitAttribute::kAngle, 0);
 	nAttr.setStorable(true);
 	nAttr.setKeyable(true);
 	nAttr.setWritable(true);
@@ -130,6 +136,10 @@ MStatus AimConstraint::initialize()
 	//rotate
 	aOutputRotate = nAttr.create("rotate", "ro", aOutputRotateX, aOutputRotateY, aOutputRotateZ);
 	addAttribute(aOutputRotate);
+
+	attributeAffects(aDriverMatrix, aOutputRotate);
+	attributeAffects(aUpVectorMatrix, aOutputRotate);
+	attributeAffects(aInputTranslate, aOutputRotate);
 
 	return MS::kSuccess;
 }
