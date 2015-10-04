@@ -15,6 +15,8 @@ MObject IkStretch::aGlobalScale;
 MObject IkStretch::aPoleVectorLock;
 MObject IkStretch::aDownStretch;
 MObject IkStretch::aUpStretch;
+//MObject IkStretch::aSoftikWeight;
+MObject IkStretch::aSmoothFactor;
 
 
 IkStretch::IkStretch()
@@ -27,7 +29,9 @@ void* IkStretch::creator()
 {
 	return new IkStretch();
 }
-
+double lerp(double a, double b, double t){
+	return (1 - t)*a + t*b;
+}
 
 MStatus IkStretch::compute(const MPlug& plug, MDataBlock& dataBlock)
 {
@@ -50,6 +54,8 @@ MStatus IkStretch::compute(const MPlug& plug, MDataBlock& dataBlock)
 		double slideV = dataBlock.inputValue(aSlide).asDouble();
 		double globalScaleV = dataBlock.inputValue(aGlobalScale).asDouble();
 		double poleVectorLockV = dataBlock.inputValue(aPoleVectorLock).asDouble();
+		//double softIkWeight = dataBlock.inputValue(aSoftikWeight).asDouble();
+		double smoothFactor = dataBlock.inputValue(aSmoothFactor).asDouble();
 
 		//compute the total chain length (original)
 		double chainLength = upInitLengthV + downInitLengthV;
@@ -63,19 +69,24 @@ MStatus IkStretch::compute(const MPlug& plug, MDataBlock& dataBlock)
 		//compute length vector 
 		chainLength *= globalScaleV;
 		double currentLength = currentLengthVector.length();
-
+		double softDistance = (chainLength - smoothFactor);
 
 		//create needed output varible
 		double upScaleOut = upInitLengthV;
 		double downScaleOut = downInitLengthV;
 		double ratio, delta;
-		/*
-		Possible spot for smooth ik.
-		*/
+		//hmmm smooth ik works but not applys stretch automaticlly causing a bug in stretch value
+		if ((softDistance > 0.001) && (currentLength >= softDistance))
+		{
+			double shortd = smoothFactor  * (1.0 - exp(-(currentLength - softDistance) / smoothFactor)) + softDistance;
+			double scale = currentLength / shortd;
+
+			upScaleOut += ((upInitLengthV * scale) - upInitLengthV);
+			downScaleOut += ((downInitLengthV * scale) - downInitLengthV);
+		}
 
 		if (stretchV > 0.001)
 		{
-			//get the ratio
 			delta = currentLength / chainLength;
 			// compute the stretch delta otherwise delta is 1
 			if (delta > 1)
@@ -108,6 +119,7 @@ MStatus IkStretch::compute(const MPlug& plug, MDataBlock& dataBlock)
 		//compute slide
 		if (slideV >= 0)
 		{
+			//get the ratio
 			ratio = chainLength / upInitLengthV;
 			delta = (((ratio - 1) * slideV));
 			upScaleOut = (delta + 1) * upScaleOut;
@@ -138,7 +150,7 @@ MStatus IkStretch::compute(const MPlug& plug, MDataBlock& dataBlock)
 			downScaleOut = (downScaleOut * (1 - poleVectorLockV)) + (endPosLen * poleVectorLockV);
 
 		}
-
+		
 
 		//output
 		dataBlock.outputValue(aDownScale).set(downScaleOut);
@@ -257,6 +269,14 @@ MStatus IkStretch::initialize()
 	nAttr.setKeyable(false);
 	addAttribute(aDownScale);
 
+	aSmoothFactor = nAttr.create("smoothDistance", "smd", MFnNumericData::kDouble, 0.0, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	nAttr.setStorable(true);
+	nAttr.setWritable(true);
+	nAttr.setKeyable(true);
+	nAttr.setMin(0.0);
+	addAttribute(aSmoothFactor);
+
 	//upScale affection
 	attributeAffects(aStartMatrix, aUpScale);
 	attributeAffects(aEndMatrix, aUpScale);
@@ -267,6 +287,7 @@ MStatus IkStretch::initialize()
 	attributeAffects(aGlobalScale, aUpScale);
 	attributeAffects(aPoleVectorLock, aUpScale);
 	attributeAffects(aUpInitLength, aUpScale);
+	attributeAffects(aSmoothFactor, aUpScale);
 
 	//downScale affection
 	attributeAffects(aStartMatrix, aDownScale);
@@ -278,7 +299,7 @@ MStatus IkStretch::initialize()
 	attributeAffects(aGlobalScale, aDownScale);
 	attributeAffects(aPoleVectorLock, aDownScale);
 	attributeAffects(aDownInitLength, aDownScale);
+	attributeAffects(aSmoothFactor, aDownScale);
 
 	return MS::kSuccess;
 }
-

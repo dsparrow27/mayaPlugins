@@ -53,7 +53,7 @@ public:	ReflectionLocator();
 		static MObject aReflectedPoint;
 		static MObject aReflectedParentInverse;
 		static MObject aScale;
-
+		static MObject aIsDrawing;
 
 private:
 	//for storing points for openGl access

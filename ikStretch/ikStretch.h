@@ -9,7 +9,7 @@
 		This node is a collapsed version of the dg graph for a stretch ik 
 		use's translation for stretch
 		includes:
-				up and down stretch (order of dag)
+				up and down stretch (order of dag) / fucked!!!!!!!!!!! :P
 				sliding
 				locking
 				globalScale
@@ -103,6 +103,8 @@ public:
 			This input attribute is for pole vector locking
 		*/
 		static MObject aPoleVectorLock;
+		//static MObject aSoftikWeight;
+		static MObject aSmoothFactor;
 
 
 };	

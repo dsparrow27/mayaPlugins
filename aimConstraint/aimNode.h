@@ -69,6 +69,10 @@ public:
 		This is the input matrix used for the upVector of the constraint
 		*/
 		static MObject aUpVectorMatrix;
+		/*
+		 This attribute is for the parentInverse matrix so that parenting can happen
+		*/
+		static MObject aParentInverseMatrix;
 
 };	
 

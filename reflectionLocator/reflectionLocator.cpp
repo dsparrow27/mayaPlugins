@@ -1,11 +1,12 @@
 #include "reflectionLocator.h"
 #include "math.h"
+MTypeId ReflectionLocator::id(0x00124500);
 MObject ReflectionLocator::aPlaneMatrix;
 MObject ReflectionLocator::aPoint;
 MObject ReflectionLocator::aReflectedPoint;
 MObject ReflectionLocator::aReflectedParentInverse;
 MObject ReflectionLocator::aScale;
-MTypeId ReflectionLocator::id(0x00124500);
+MObject ReflectionLocator::aIsDrawing;
 
 ReflectionLocator::ReflectionLocator()
 {
@@ -92,6 +93,13 @@ void ReflectionLocator::draw(M3dView& view,
 	M3dView::DisplayStyle style,
 	M3dView::DisplayStatus status)
 {
+	MPlug pDrawit(thisMObject(), aIsDrawing);
+	bool drawItV;
+	pDrawit.getValue(drawItV);
+
+	if (drawItV == false)
+		return;
+
 	//glStart
 	view.beginGL();
 	//setup states
@@ -213,6 +221,11 @@ MStatus ReflectionLocator::initialize()
 
 	//output attribute
 	//x,y,z output attribute
+	aIsDrawing = nAttr.create("draw", "d", MFnNumericData::kBoolean, 1);
+	nAttr.setWritable(true);
+	nAttr.setStorable(true);
+	addAttribute(aIsDrawing);
+
 	aReflectedPoint = nAttr.createPoint("reflectedPoint", "reflectedPoint");
 	nAttr.setWritable(false);
 	nAttr.setStorable(false);

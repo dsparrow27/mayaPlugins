@@ -14,6 +14,7 @@ MObject AimNode::aOutputRotateZ;
 MObject AimNode::aOutputRotate;
 MObject AimNode::aDriverMatrix;
 MObject AimNode::aUpVectorMatrix;
+MObject AimNode::aParentInverseMatrix;
 
 
 void* AimNode::creator()
@@ -33,7 +34,10 @@ MStatus AimNode::compute(const MPlug& plug, MDataBlock& dataBlock)
 		// the matrix to use as the upVector
 		MMatrix upVectorMatrix = dataBlock.inputValue(aUpVectorMatrix).asMatrix();
 		MVector inputTranslate = dataBlock.inputValue(aInputTranslate).asVector();
+		MMatrix parentInverse = dataBlock.inputValue(aParentInverseMatrix).asMatrix();
 
+		driverMatrix *= parentInverse;
+		upVectorMatrix *= parentInverse;
 		//extract the translation from the matrices
 		MVector driverMatrixPos(driverMatrix[3][0],
 			driverMatrix[3][1],
@@ -46,6 +50,8 @@ MStatus AimNode::compute(const MPlug& plug, MDataBlock& dataBlock)
 		//get the vectors
 		MVector aimVector = driverMatrixPos - inputTranslate;
 		MVector upVector = upVectorMatrixPos - inputTranslate;
+		
+		//upVector *= parentInverse;
 		aimVector.normalize();
 		upVector.normalize();
 
@@ -137,6 +143,13 @@ MStatus AimNode::initialize()
 	aOutputRotate = nAttr.create("rotate", "ro", aOutputRotateX, aOutputRotateY, aOutputRotateZ);
 	addAttribute(aOutputRotate);
 
+	//parent inverse matrix
+	aParentInverseMatrix = mAttr.create("parentInverse", "parinv");
+	mAttr.setDefault(MMatrix::identity);
+	addAttribute(aParentInverseMatrix);
+
+
+	attributeAffects(aParentInverseMatrix, aOutputRotate);
 	attributeAffects(aDriverMatrix, aOutputRotate);
 	attributeAffects(aUpVectorMatrix, aOutputRotate);
 	attributeAffects(aInputTranslate, aOutputRotate);
