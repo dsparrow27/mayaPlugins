@@ -45,6 +45,7 @@ public:	CreaseDisplay();
 
 private:
 	MUintArray creaseEdgesArray;
+	MDoubleArray creaseDataArray;
 	//creaseValues;
 };
 

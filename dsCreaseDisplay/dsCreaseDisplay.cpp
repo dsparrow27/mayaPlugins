@@ -5,6 +5,7 @@ MObject CreaseDisplay::aIsDrawing;
 MObject CreaseDisplay::aColorRamp;
 MObject CreaseDisplay::aTransparent;
 MObject CreaseDisplay::aInMesh;
+MObject CreaseDisplay::aColorRamp;
 
 void* CreaseDisplay::creator()
 {
@@ -39,6 +40,7 @@ void CreaseDisplay::draw(M3dView& view,
 
 	if (drawItV == false)
 		return;
+
 
 }
 

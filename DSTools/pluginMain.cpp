@@ -4,6 +4,8 @@
 #include "rippleDeformer.h"
 #include "vertSnapCommand.h"
 #include "vertSnapDeformer.h"
+#include "reflectionLocator.h"
+#include "aimNode.h"
 #include <maya/MFnPlugin.h>
 
 
@@ -42,6 +44,19 @@ MStatus initializePlugin(MObject obj)
 		MPxNode::kDeformerNode);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
+	status = fnplugin.registerNode("reflectionLocator",
+		RippleDeformer::id,
+		RippleDeformer::creator,
+		RippleDeformer::initialize,
+		MPxNode::kLocatorNode);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	status = fnplugin.registerNode("aimNode",
+		RippleDeformer::id,
+		RippleDeformer::creator,
+		RippleDeformer::initialize,
+		MPxNode::kDependNode);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 	//vertSnap command and deformer
 
 	status = fnplugin.registerCommand("vertSnap",
@@ -77,6 +92,12 @@ MStatus uninitializePlugin(MObject obj)
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	status = plugin.deregisterNode(RippleDeformer::id);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	status = plugin.deregisterNode(ReflectionLocator::id);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	status = plugin.deregisterNode(AimNode::id);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	//deregister meshSnapCommand and deformer

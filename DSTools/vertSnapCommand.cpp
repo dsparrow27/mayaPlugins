@@ -47,7 +47,7 @@ MStatus	VertSnapCommand::doIt(const MArgList& argList)
 	status = argData.getObjects(selection);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	//store the dagPath of selection in class variables
-	status = selection.getDagPath(0, mPathBaseMesh);
+	status = selection.getDagPath(0, mPathSnapMesh);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	status = selection.getDagPath(0, mPathBaseMesh);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
