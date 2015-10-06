@@ -38,14 +38,17 @@ public:	CreaseDisplay();
 		static MStatus initialize();
 		// node id 
 		static MTypeId id;
+		static MObject aInMesh;
 		static MObject aIsDrawing;
 		static MObject aColorRamp;
 		static MObject aTransparent;
-		static MObject aInMesh;
+		static MObject aMinCreaseValue;
+		static MObject aMaxCreaseValue;
 
 private:
-	MUintArray creaseEdgesArray;
-	//creaseValues;
+	//MIntArray startPoints;
+	//MIntArray endPoints;
+	MUintArray creaseEdgesIdArray;
 	MDoubleArray creaseValues;
 };
 
