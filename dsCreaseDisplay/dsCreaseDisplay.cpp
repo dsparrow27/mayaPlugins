@@ -21,9 +21,16 @@ MStatus CreaseDisplay::compute(const MPlug& plug, MDataBlock& dataBlock)
 	MFnMesh fnMesh(inMesh, &status);
 	//from the mesh get all the crease edges and values 
 	MUintArray creaseEdgesArray;
-	MDoubleArray creaseDataArray;
-	fnMesh.getCreaseEdges(creaseEdgesArray, creaseDataArray);
-
+	fnMesh.getCreaseEdges(creaseEdgesArray, creaseValues);
+	
+	for (unsigned int edgeIter =0; edgeIter < creaseEdgeIds.length; ++edgeIter)
+	{
+		//getedgeVertices(creaseEdgeUds[edgeIter], edgeVertexIndex)
+		//Mpoint edgeStart, edgeEnd
+		//inmesh.getPoint(edgeVertexIndex[0], edgeStart)
+		//inmesh.getPoint(edgeVertexIndex[0], edgeEnd)
+		//append edge start and end
+	}
 	return MS::kSuccess;
 
 }
@@ -34,13 +41,18 @@ void CreaseDisplay::draw(M3dView& view,
 						M3dView::DisplayStyle style,
 						M3dView::DisplayStatus status)
 {
+	//draw plug function
 	MPlug pDrawit(thisMObject(), aIsDrawing);
 	bool drawItV;
 	pDrawit.getValue(drawItV);
 
 	if (drawItV == false)
 		return;
-
+	
+	//some for loop here 
+	//pointIter = 0; pointIter< startPoints.length(); ++ pointIter
+	// edgeDisplay stuff
+	// values display here using glText , need to get center of edge = startPoint + (endPoint-startPoint) *.5
 
 }
 
