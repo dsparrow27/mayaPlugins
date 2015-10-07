@@ -5,11 +5,29 @@ MObject CreaseDisplay::aIsDrawing;
 MObject CreaseDisplay::aColorRamp;
 MObject CreaseDisplay::aTransparent;
 MObject CreaseDisplay::aInMesh;
-MObject CreaseDisplay::aColorRamp;
 MObject CreaseDisplay::aDrawOptions;
 MObject CreaseDisplay::aMinCreaseValue;
 MObject CreaseDisplay::aMaxCreaseValue;
 
+
+CreaseDisplay::CreaseDisplay()
+{
+}
+
+
+CreaseDisplay::~CreaseDisplay()
+{
+
+}
+
+void CreaseDisplay::postConstructor()
+{
+	//rename the locator shape post construction
+	MObject oThis = thisMObject();
+	MFnDependencyNode fnNode(oThis);
+	fnNode.setName("creaseDisplay#");
+
+}
 
 void* CreaseDisplay::creator()
 {
@@ -28,7 +46,7 @@ MStatus CreaseDisplay::compute(const MPlug& plug, MDataBlock& dataBlock)
 	//clear the start and endpoints each compute so we don't double up 
 	startPoints.clear();
 	endPoints.clear();
-	for (unsigned int edgeIter=0; edgeIter < creaseEdgesIdArray.length; ++edgeIter)
+	for (unsigned int edgeIter=0; edgeIter < creaseEdgesIdArray.length(); ++edgeIter)
 	{	
 		MPoint edgeStart, edgeEnd;
 		int2 edgeVertexIndex;
@@ -113,7 +131,7 @@ void CreaseDisplay::draw(M3dView& view,
 		// maya selected template pink
 		solidColor = MColor(1.0f, 0.47f, 0.47f);
 		break;
-
+	}
 	//apply color and transparencey
 	//draw the edges and text
 	for (unsigned int pointIter = 0; pointIter < startPoints.length(); ++pointIter)
@@ -134,9 +152,7 @@ void CreaseDisplay::draw(M3dView& view,
 		textStr.set(creaseValues[pointIter]);
 		//draw the text at the centreish of the edge
 		view.drawText(textStr, midPointEdge);
-		
 	}
-
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 	glPopAttrib();
@@ -167,12 +183,17 @@ MStatus CreaseDisplay::initialize()
 	MFnNumericAttribute nAttr;
 	MFnTypedAttribute tAttr;
 	MRampAttribute rAttr;
+	MFnEnumAttribute eAttr;
 
 	//output attribute
-	aInMesh = tAttr.create("inMesh", "im", MFnData::kMesh)
+	aInMesh = tAttr.create("inMesh", "im", MFnData::kMesh);
+	tAttr.setStorable(true);
+	tAttr.setWritable(true);
+
 	aIsDrawing = nAttr.create("draw", "d", MFnNumericData::kBoolean, 1);
 	nAttr.setWritable(true);
 	nAttr.setStorable(true);
+	nAttr.setKeyable(true);
 	addAttribute(aIsDrawing);
 	
 	aTransparent = nAttr.create("transparent", "transp", MFnNumericData::kDouble, 1);
@@ -180,20 +201,27 @@ MStatus CreaseDisplay::initialize()
 	nAttr.setMax(1.0);
 	nAttr.setWritable(true);
 	nAttr.setStorable(true);
+	nAttr.setKeyable(true);
 	addAttribute(aTransparent);
 
-	aColorRamp = rAttr.createColorRamp("colorRamp", "colr");
+	aColorRamp = MRampAttribute::createColorRamp("colorRamp", "colr");
 	addAttribute(aColorRamp);
 
-	//aDrawOptions = nAttr.create("transparent", "transp", MFnNumericData::kFloat, 1);
+	aDrawOptions = eAttr.create("drawOptions", "do", 0);
+	eAttr.addField("text&geo", 0);
+	eAttr.addField("text", 1);
+	addAttribute(aDrawOptions);
+
 	aMinCreaseValue = nAttr.create("minCreaseValue","minVal", MFnNumericData::kDouble, 0.0);
 	nAttr.setStorable(true);
-	nAttr.setkeyable(true);
+	nAttr.setKeyable(true);
+	nAttr.setWritable(true);
 	addAttribute(aMinCreaseValue);
 
 	aMaxCreaseValue = nAttr.create("maxCreaseValue", "maxVal", MFnNumericData::kDouble, 10.0);
 	nAttr.setStorable(true);
-	nAttr.setkeyable(true);
+	nAttr.setKeyable(true);
+	nAttr.setWritable(true);
 	addAttribute(aMaxCreaseValue);
 
 	return MS::kSuccess;

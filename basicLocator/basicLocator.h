@@ -1,8 +1,8 @@
 /* 
 
 */
-#ifndef creaseDisplay_H
-#define creaseDisplay_H
+#ifndef basicLocator_H
+#define basicLocator_H
 
 
 #include <maya/MDataHandle.h>
@@ -11,22 +11,15 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MPxLocatorNode.h>
 #include <maya/MFnNumericAttribute.h>
-#include <maya/MFnTypedAttribute.h>
-#include <maya/MRampAttribute.h>
 #include <maya/MFnEnumAttribute.h>
-#include <maya/MFnMesh.h>
-#include <maya/MUintArray.h>
-#include <maya/MPointArray.h>
-#include <maya/MDoubleArray.h>
-#include <maya/MString.h>
-#include <maya/MBoundingBox.h>
+#include <maya/MFloatPointArray.h>
 
 
-class CreaseDisplay : public MPxLocatorNode
+class BasicLocator : public MPxLocatorNode
 {
-public:	CreaseDisplay();
+public:	BasicLocator();
 		virtual void postConstructor();
-		virtual	~CreaseDisplay();
+		virtual	~BasicLocator();
 		//main deformation function
 		virtual	MStatus compute(const MPlug& plug, MDataBlock& dataBlock);
 
@@ -38,27 +31,19 @@ public:	CreaseDisplay();
 
 		virtual	bool isBounded() const;
 		virtual	bool isTransparent() const;
+		virtual MBoundingBox boundingBox() const;
+		void drawArrow();
+		void drawDisc(float radius, int divisions, bool filled);
+		
 		//standard node creation function
 		static void* creator();
 		static MStatus initialize();
-private:
-	
-	MPointArray startPoints;
-	MPointArray endPoints;
-	MUintArray creaseEdgesIdArray;
-	MDoubleArray creaseValues;
-
-public:
 		// node id 
 		static MTypeId id;
-		static MObject aInMesh;
 		static MObject aIsDrawing;
-		static MObject aColorRamp;
-		static MObject aTransparent;
-		//for draw options, 
-		static MObject aDrawOptions;
-		static MObject aMinCreaseValue;
-		static MObject aMaxCreaseValue;
+		static MObject aShapeType;
+		static MObject aShapeColor;
+		static MObject aIsTransparent;
 };
 
-#endif // !creaseDisplay _H
+#endif // !basicLocator_H
