@@ -11,11 +11,13 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MPxLocatorNode.h>
 #include <maya/MFnNumericAttribute.h>
+#include <maya/MFnTypedAttribute.h>
 #include <maya/MRampAttribute.h>
 #include <maya/MFnMesh.h>
 #include <maya/MUintArray.h>
+#include <maya/MPointArray.h>
 #include <maya/MDoubleArray.h>
-
+#include <maya/MString.h>
 
 class CreaseDisplay : public MPxLocatorNode
 {
@@ -36,20 +38,24 @@ public:	CreaseDisplay();
 		//standard node creation function
 		static void* creator();
 		static MStatus initialize();
+private:
+	
+	MPointArray startPoints;
+	MPointArray endPoints;
+	MUintArray creaseEdgesIdArray;
+	MDoubleArray creaseValues;
+
+public:
 		// node id 
 		static MTypeId id;
 		static MObject aInMesh;
 		static MObject aIsDrawing;
 		static MObject aColorRamp;
 		static MObject aTransparent;
+		//for draw options, 
+		static MObject aDrawOptions;
 		static MObject aMinCreaseValue;
 		static MObject aMaxCreaseValue;
-
-private:
-	//MIntArray startPoints;
-	//MIntArray endPoints;
-	MUintArray creaseEdgesIdArray;
-	MDoubleArray creaseValues;
 };
 
 #endif // !creaseDisplay _H

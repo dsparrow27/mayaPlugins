@@ -6,6 +6,7 @@ MObject CreaseDisplay::aColorRamp;
 MObject CreaseDisplay::aTransparent;
 MObject CreaseDisplay::aInMesh;
 MObject CreaseDisplay::aColorRamp;
+MObject CreaseDisplay::aDrawOptions;
 MObject CreaseDisplay::aMinCreaseValue;
 MObject CreaseDisplay::aMaxCreaseValue;
 
@@ -24,16 +25,21 @@ MStatus CreaseDisplay::compute(const MPlug& plug, MDataBlock& dataBlock)
 	MFnMesh fnMesh(inMesh, &status);
 	//from the mesh get all the crease edges and values 
 	fnMesh.getCreaseEdges(creaseEdgesIdArray, creaseValues);
-	MPoint edgeStart, edgeEnd;
-	/*
+	//clear the start and endpoints each compute so we don't double up 
+	startPoints.clear();
+	endPoints.clear();
 	for (unsigned int edgeIter=0; edgeIter < creaseEdgesIdArray.length; ++edgeIter)
 	{	
+		MPoint edgeStart, edgeEnd;
+		int2 edgeVertexIndex;
 		fnMesh.getEdgeVertices(creaseEdgesIdArray[edgeIter], edgeVertexIndex);
 		fnMesh.getPoint(edgeVertexIndex[0], edgeStart);
-		fnMesh.getPoint(edgeVertexIndex[0], edgeEnd);
+		fnMesh.getPoint(edgeVertexIndex[1], edgeEnd);
 		//append edge start and end
+		startPoints.append(edgeStart);
+		endPoints.append(edgeEnd);
 	}
-	*/
+	
 
 	return MS::kSuccess;
 
@@ -46,14 +52,30 @@ void CreaseDisplay::draw(M3dView& view,
 						M3dView::DisplayStatus status)
 {
 	MObject currentObject = thisMObject();
-	//draw plug function
+	//draw plug function,we only want to draw if the plug is true
 	MPlug pDrawit(currentObject, aIsDrawing);
 	bool drawItV;
-	pDrawit.getValue(drawItV);
 
+	pDrawit.getValue(drawItV);
 	if (drawItV == false)
 		return;
+
 	//get the plug values for settings including rampcolor
+	MPlug rPlug(currentObject, aColorRamp);
+	
+	//min creaseValue
+	MPlug minCreasePlug(currentObject, aMinCreaseValue);
+	double minCreaseVal;
+	minCreasePlug.getValue(minCreaseVal);
+	//max creaseValue
+	MPlug maxCreasePlug(currentObject, aMaxCreaseValue);
+	double maxCreaseVal;
+	maxCreasePlug.getValue(maxCreaseVal);
+	//transparent values
+	MPlug aTranPlug(currentObject, aTransparent);
+	double transparentV;
+	aTranPlug.getValue(transparentV);
+
 
 	//glStart
 	view.beginGL();
@@ -91,26 +113,30 @@ void CreaseDisplay::draw(M3dView& view,
 		// maya selected template pink
 		solidColor = MColor(1.0f, 0.47f, 0.47f);
 		break;
-	/*
-	apply color and transparencey
 
+	//apply color and transparencey
 	//draw the edges and text
 	for (unsigned int pointIter = 0; pointIter < startPoints.length(); ++pointIter)
 	{
 	// edgeDisplay stuff
 		// color is dependent on color ramp , smoothed shading between min and max
 		glBegin(GL_LINES);
-		glColor4f(solidColor.r, solidColor.g, solidColor.b, solidColor.a);
-		glVertex3d(startPoints[pointIter]);
-		glVertex3d(endPoints[pointIter]);
-		MPoint midPointEdge = startPoints[pointIter] + (endPoints[pointIter] - startPoints[pointIter] * 0.5)
-		
-		view.drawText(creaseValues[pointIter])
+		glColor4f(solidColor.r, solidColor.g, solidColor.b, transparentV);
+		//create the edge based on the start and end points
+		glVertex3d(startPoints[pointIter].x, startPoints[pointIter].y, startPoints[pointIter].z);
+		glVertex3d(endPoints[pointIter].x, endPoints[pointIter].y, endPoints[pointIter].z);
 
-	// values display here using glText , need to get center of edge = startPoint + (endPoint-startPoint) *.5
+		//need to get center of edge = startPoint + (endPoint-startPoint) *.5 , to display the crease value
+		MPoint midPointEdge = startPoints[pointIter] + (endPoints[pointIter] - startPoints[pointIter])* 0.5;
+		//values display here using glText,
+		MString textStr;
+		//convert to string
+		textStr.set(creaseValues[pointIter]);
+		//draw the text at the centreish of the edge
+		view.drawText(textStr, midPointEdge);
 		
 	}
-	*/
+
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 	glPopAttrib();
@@ -139,20 +165,36 @@ MStatus CreaseDisplay::initialize()
 	MStatus status;
 	
 	MFnNumericAttribute nAttr;
+	MFnTypedAttribute tAttr;
+	MRampAttribute rAttr;
+
 	//output attribute
+	aInMesh = tAttr.create("inMesh", "im", MFnData::kMesh)
 	aIsDrawing = nAttr.create("draw", "d", MFnNumericData::kBoolean, 1);
 	nAttr.setWritable(true);
 	nAttr.setStorable(true);
 	addAttribute(aIsDrawing);
 	
-	aTransparent = nAttr.create("transparent", "transp", MFnNumericData::kFloat, 1);
+	aTransparent = nAttr.create("transparent", "transp", MFnNumericData::kDouble, 1);
 	nAttr.setMin(0.0);
 	nAttr.setMax(1.0);
 	nAttr.setWritable(true);
 	nAttr.setStorable(true);
 	addAttribute(aTransparent);
 
-	aColorRamp = MRampAttribute::createColorRamp("colorRamp", "colr");
+	aColorRamp = rAttr.createColorRamp("colorRamp", "colr");
 	addAttribute(aColorRamp);
+
+	//aDrawOptions = nAttr.create("transparent", "transp", MFnNumericData::kFloat, 1);
+	aMinCreaseValue = nAttr.create("minCreaseValue","minVal", MFnNumericData::kDouble, 0.0);
+	nAttr.setStorable(true);
+	nAttr.setkeyable(true);
+	addAttribute(aMinCreaseValue);
+
+	aMaxCreaseValue = nAttr.create("maxCreaseValue", "maxVal", MFnNumericData::kDouble, 10.0);
+	nAttr.setStorable(true);
+	nAttr.setkeyable(true);
+	addAttribute(aMaxCreaseValue);
+
 	return MS::kSuccess;
 }
