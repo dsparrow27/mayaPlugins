@@ -8,7 +8,7 @@ MObject CreaseDisplay::aInMesh;
 MObject CreaseDisplay::aDrawOptions;
 MObject CreaseDisplay::aMinCreaseValue;
 MObject CreaseDisplay::aMaxCreaseValue;
-
+MObject CreaseDisplay::fakeOutput;
 
 CreaseDisplay::CreaseDisplay()
 {
@@ -38,14 +38,18 @@ void* CreaseDisplay::creator()
 MStatus CreaseDisplay::compute(const MPlug& plug, MDataBlock& dataBlock)
 {
 	MStatus	status;
+	if (plug != fakeOutput)
+	{
+		return MS::kSuccess;
+	}
+	
 	//get mesh
 	MObject inMesh = dataBlock.inputValue(aInMesh).asMesh();
 	MFnMesh fnMesh(inMesh, &status);
 	//from the mesh get all the crease edges and values 
 	fnMesh.getCreaseEdges(creaseEdgesIdArray, creaseValues);
 	//clear the start and endpoints each compute so we don't double up 
-	startPoints.clear();
-	endPoints.clear();
+
 	for (unsigned int edgeIter=0; edgeIter < creaseEdgesIdArray.length(); ++edgeIter)
 	{	
 		MPoint edgeStart, edgeEnd;
@@ -53,11 +57,13 @@ MStatus CreaseDisplay::compute(const MPlug& plug, MDataBlock& dataBlock)
 		fnMesh.getEdgeVertices(creaseEdgesIdArray[edgeIter], edgeVertexIndex);
 		fnMesh.getPoint(edgeVertexIndex[0], edgeStart);
 		fnMesh.getPoint(edgeVertexIndex[1], edgeEnd);
+		MGlobal::displayInfo("getting pass point creation");
 		//append edge start and end
 		startPoints.append(edgeStart);
 		endPoints.append(edgeEnd);
 	}
 	
+	dataBlock.outputValue(fakeOutput).setClean();
 
 	return MS::kSuccess;
 
@@ -91,7 +97,7 @@ void CreaseDisplay::draw(M3dView& view,
 	maxCreasePlug.getValue(maxCreaseVal);
 	//transparent values
 	MPlug aTranPlug(currentObject, aTransparent);
-	double transparentV;
+	float transparentV;
 	aTranPlug.getValue(transparentV);
 
 
@@ -105,7 +111,7 @@ void CreaseDisplay::draw(M3dView& view,
 
 	//setup for draw colors for maya(active, lead etc)
 	MColor solidColor, wireColor;
-
+	
 	switch (status)
 	{
 	case M3dView::kActive:
@@ -137,13 +143,20 @@ void CreaseDisplay::draw(M3dView& view,
 	for (unsigned int pointIter = 0; pointIter < startPoints.length(); ++pointIter)
 	{
 	// edgeDisplay stuff
+		glBegin(GL_LINES);
+		glColor3f(1.0, 0.0f, 1.0f);
+		//create the edge based on the start and end points
+		glVertex3d(0.0f, 0.0f, 0.0f);
+		glVertex3d(1.0f, 1.0f, 1.0f);
+		glLineWidth(5);
+		glEnd();
 		// color is dependent on color ramp , smoothed shading between min and max
 		glBegin(GL_LINES);
-		glColor4f(solidColor.r, solidColor.g, solidColor.b, transparentV);
+		glColor3f(solidColor.r, solidColor.g, solidColor.b);
 		//create the edge based on the start and end points
 		glVertex3d(startPoints[pointIter].x, startPoints[pointIter].y, startPoints[pointIter].z);
 		glVertex3d(endPoints[pointIter].x, endPoints[pointIter].y, endPoints[pointIter].z);
-
+		glEnd();
 		//need to get center of edge = startPoint + (endPoint-startPoint) *.5 , to display the crease value
 		MPoint midPointEdge = startPoints[pointIter] + (endPoints[pointIter] - startPoints[pointIter])* 0.5;
 		//values display here using glText,
@@ -186,11 +199,10 @@ MStatus CreaseDisplay::initialize()
 	MFnEnumAttribute eAttr;
 
 	//output attribute
-	aInMesh = tAttr.create("inMesh", "im", MFnData::kMesh);
-	tAttr.setStorable(true);
-	tAttr.setWritable(true);
+	aInMesh = tAttr.create("inMesh", "inMesh", MFnData::kMesh);
+	addAttribute(aInMesh);
 
-	aIsDrawing = nAttr.create("draw", "d", MFnNumericData::kBoolean, 1);
+	aIsDrawing = nAttr.create("draw", "draw", MFnNumericData::kBoolean, 1);
 	nAttr.setWritable(true);
 	nAttr.setStorable(true);
 	nAttr.setKeyable(true);
@@ -204,12 +216,13 @@ MStatus CreaseDisplay::initialize()
 	nAttr.setKeyable(true);
 	addAttribute(aTransparent);
 
-	aColorRamp = MRampAttribute::createColorRamp("colorRamp", "colr");
-	addAttribute(aColorRamp);
-
-	aDrawOptions = eAttr.create("drawOptions", "do", 0);
+	aDrawOptions = eAttr.create("drawOptions", "do");
+	eAttr.setWritable(true);
+	eAttr.setStorable(true);
+	eAttr.setKeyable(true);
 	eAttr.addField("text&geo", 0);
 	eAttr.addField("text", 1);
+	eAttr.setDefault(0);
 	addAttribute(aDrawOptions);
 
 	aMinCreaseValue = nAttr.create("minCreaseValue","minVal", MFnNumericData::kDouble, 0.0);
@@ -224,5 +237,17 @@ MStatus CreaseDisplay::initialize()
 	nAttr.setWritable(true);
 	addAttribute(aMaxCreaseValue);
 
+	aColorRamp = MRampAttribute::createColorRamp("colorRamp", "colr");
+	addAttribute(aColorRamp);
+
+	fakeOutput = tAttr.create("outPoints", "outPoints", MFnData::kMesh);
+	tAttr.setStorable(false);
+	tAttr.setWritable(false);
+	addAttribute(fakeOutput);
+
+	attributeAffects(aInMesh, fakeOutput);
+	attributeAffects(aIsDrawing, fakeOutput);
+	attributeAffects(aTransparent, fakeOutput);
+	
 	return MS::kSuccess;
 }

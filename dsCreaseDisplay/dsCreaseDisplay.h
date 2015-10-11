@@ -20,7 +20,8 @@
 #include <maya/MDoubleArray.h>
 #include <maya/MString.h>
 #include <maya/MBoundingBox.h>
-
+#include <maya/MFnData.h>
+#include <maya/MGlobal.h>
 
 class CreaseDisplay : public MPxLocatorNode
 {
@@ -51,6 +52,7 @@ private:
 public:
 		// node id 
 		static MTypeId id;
+		static MObject fakeOutput;
 		static MObject aInMesh;
 		static MObject aIsDrawing;
 		static MObject aColorRamp;

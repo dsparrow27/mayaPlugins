@@ -1,7 +1,7 @@
 #include "basicLocator.h"
 
 MObject BasicLocator::aIsDrawing;
-MTypeId BasicLocator::id(0x00124507);
+MTypeId BasicLocator::id(0x00124508);
 MObject BasicLocator::aShapeType;
 MObject BasicLocator::aShapeColor;
 MObject BasicLocator::aIsTransparent;
@@ -120,12 +120,10 @@ void BasicLocator::draw(M3dView& view,
 	{
 	case 0:
 		drawArrow();
-
+		break;
 	case 1:
 		drawDisc(1.0, 32, true);
-	
-	default :
-		drawArrow();
+		break;
 	}
 	
 	glDepthMask(GL_TRUE);
@@ -245,11 +243,12 @@ MStatus BasicLocator::initialize()
 	nAttr.setWritable(true);
 	addAttribute(aShapeColor);
 
-	aShapeType = eAttr.create("shapeType", "styp", 0);
+	aShapeType = eAttr.create("shapeType", "styp");
 	eAttr.setStorable(true);
 	eAttr.setKeyable(true);
 	eAttr.addField("arrow", 0);
 	eAttr.addField("disc", 1);
+	eAttr.setDefault(0);
 	addAttribute(aShapeType);
 
 	return MS::kSuccess;
