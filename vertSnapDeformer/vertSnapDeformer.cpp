@@ -14,7 +14,7 @@ MObject VertSnapDeformer::aRebind;
 VertSnapDeformer::VertSnapDeformer()
 {
 	//constructor
-	//determines if the node is first time it's being running(initialized)
+	//determines if the node is first time it's being run(initialized)
 	initialized = 0;
 	//number of vertices
 	elemCount = 0;

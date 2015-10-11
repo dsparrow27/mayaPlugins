@@ -60,7 +60,7 @@ private:
 				  MPointArray& deformerPoints,
 				  MIntArray& bindArray,
 				  MObject& attribute);
-
+	//
 	void ensureIndexes(MObject& attribute, int indexSize);
 	//variables
 	unsigned int elemCount;
