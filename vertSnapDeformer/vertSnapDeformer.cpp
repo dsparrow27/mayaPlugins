@@ -10,7 +10,6 @@ MObject VertSnapDeformer::aDriverMesh;
 MObject VertSnapDeformer::aRebind;
 
 
-
 VertSnapDeformer::VertSnapDeformer()
 {
 	//constructor
@@ -34,6 +33,7 @@ MStatus	VertSnapDeformer::deform(MDataBlock& dataBlock,
 								unsigned int geomIndex)
 {
 	MStatus status;
+	//return if driver mesh not connected
 	MPlug driverMeshPlug(thisMObject(), aDriverMesh);
 	if (driverMeshPlug.isConnected() == false)
 	{
@@ -48,12 +48,6 @@ MStatus	VertSnapDeformer::deform(MDataBlock& dataBlock,
 	//get the envelope
 	double env = dataBlock.inputValue(envelope).asFloat();
 	bool rebindV = dataBlock.inputValue(aRebind).asBool();
-
-	if (env == 0.0f || initialized == 0)
-	{
-		return MS::kNotImplemented;
-	}
-
 	
 	//get vertices in world space
 	MPointArray	driverPnts;
@@ -76,7 +70,48 @@ MStatus	VertSnapDeformer::deform(MDataBlock& dataBlock,
 		elemCount = itGeo.exactCount();
 	}
 
+	int  arrayLength = bindArray.length();
+
+	if (elemCount != arrayLength || initialized == 0 || arrayLength == 0)
+	{
+		//read from attribute 
+		ensureIndexes(aIdMapping, itGeo.exactCount());
+
+		//loop the attribute and read the value
+		MArrayDataHandle idsHandle = dataBlock.inputArrayValue(aIdMapping);
+		idsHandle.jumpToArrayElement(0);
+
+		int count = itGeo.exactCount();
+		bindArray.setLength(count);
+		for (int i = 0; i < count; i++, idsHandle.next())
+		{
+			bindArray[i] = idsHandle.inputValue().asInt();
+
+		}
+		//set value in controller variables
+		elemCount = count;
+		initialized = 1;
+	}
+	if (elemCount != itGeo.exactCount())
+	{
+		MGlobal::displayError("MisMatch between saved bind index and current mesh vertex, please rebind");
+		return MS::kSuccess;
+	}
 	
+	
+	//loop all the elements and set the size
+	MVector delta, current, target;
+	for (int i = 0; i < elemCount; i++)
+	{
+		double w = weightValue(dataBlock, geomIndex, itGeo.index());
+		//compute the delta from the input position and final position
+		delta = driverPnts[bindArray[i]] - pos[i];
+		//scale the vector to calculate envelopes
+		pos[i] = pos[i] + (delta * env * w);
+	}
+	//dump all vertex positions
+	itGeo.setAllPositions(pos);
+
 	return MS::kSuccess;
 }
 
@@ -134,14 +169,15 @@ void VertSnapDeformer::initData(MObject& driverMesh, MPointArray& deformerPoints
 	MIntArray vertices;
 	double minDist, dist;
 	MVector base, end, vec;
-
+	auto accelerator = MFnMesh::autoUniformGridParams();
 	for (int i = 0; i < count; i++)
 	{
 		//get the closest face
 		meshFn.getClosestPoint(deformerPoints[i],
 									closest,
 									MSpace::kWorld,
-									&closestFace);
+									&closestFace,
+									&accelerator);
 		//find the closest vertex
 		faceIter.setIndex(closestFace, oldIndex);
 		vertices.setLength(0);
@@ -182,11 +218,20 @@ void VertSnapDeformer::initData(MObject& driverMesh, MPointArray& deformerPoints
 
 void VertSnapDeformer::ensureIndexes(MObject& attribute, int indexSize)
 {
+	//loops the index in order to create them if needed
+	MPlug attrPlug(thisMObject(), attribute);
+	MDataHandle handle;
 
+	for (int i = 0; i < indexSize; i++)
+	{
+		attrPlug.selectAncestorLogicalIndex(i, attribute);
+		attrPlug.getValue(handle);
+	}
 }
 
 MStatus VertSnapDeformer::shouldSave(const MPlug& plug, bool& result)
 {
-	MStatus status = MS::kSuccess;
+	// set each plug to save
 	result = true;
+	return MS::kSuccess;
 }
