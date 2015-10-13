@@ -1,5 +1,7 @@
 /*
-	
+This deformer node drive's a mesh with another based based on closest point
+mesh is weight paintable
+	todo: kdtree for finding closest point
 */
 #ifndef VERTSNAPDEFORMER_H
 #define VERTSNAPDEFORMER_H
