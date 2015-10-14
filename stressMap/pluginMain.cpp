@@ -12,7 +12,7 @@ MStatus initializePlugin(MObject obj)
 		StressMap::id,
 		StressMap::creator,
 		StressMap::initialize,
-		StressMap::kDeformerNode);
+		StressMap::kLocatorNode);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	return MS::kSuccess;
