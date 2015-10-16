@@ -1,7 +1,7 @@
 #include "stressMap.h"
 
 
-MTypeId	StressMap::id(0x00124509);
+MTypeId	StressMap::id(0x00124511);
 MObject StressMap::aIsDrawing;
 MObject StressMap::aIsTransparent;
 
@@ -84,7 +84,7 @@ void StressMap::draw(M3dView& view,
 		// maya selected template pink
 		solidColor = MColor(1.0f, 0.47f, 0.47f);
 		break;
-
+	}
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 	glPopAttrib();
@@ -111,5 +111,18 @@ MStatus StressMap::initialize()
 {
 	//standard attribute creation for the locator node 
 	MStatus status;
-	return MS::kSuccess
+	return MS::kSuccess;
+}
+
+void StressMap::buildConnectTree(std::vector<StressPoint>&pointTree,
+								MDoubleArray &stressmapValues,
+								MObject referenceMesh)
+{
+}
+void StressMap::stressLine(MPoint& p,
+							double& stress,
+							const double* squashColor,
+							const double* stretchColor,
+							const double& mult)
+{
 }

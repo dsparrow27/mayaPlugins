@@ -1,7 +1,14 @@
 /*
-This deformer node drive's a mesh with another based based on closest point
-mesh is weight paintable
-	todo: kdtree for finding closest point
+@author David Sparrow
+@Date 17/10/2015
+@version : v1.0.0
+
+node name : stressmap
+
+Details: in order to use this node you need to provide a input mesh which is deforming
+		mesh and a reference mesh which is the undeformed mesh used as a reference as 0 stress
+		output is a MDoubleArray
+
 */
 #ifndef STRESSMAP_H
 #define STRESSMAP_H
@@ -51,12 +58,15 @@ public:	StressMap();
 	static void* creator();
 	static MStatus initialize();
 
+	//evaluate the reference mesh
 	void buildConnectTree(std::vector<StressPoint>&pointTree, MDoubleArray &stressmapValues, MObject referenceMesh);
+	//for drawing the locator
 	void stressLine(MPoint& p,
 					double& stress,
 					const double* squashColor,
 					const double* stretchColor,
 					const double& mult);
+
 	int firstRun;
 	MPointArray referencePos;
 	MPointArray inputPos;
