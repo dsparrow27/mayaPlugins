@@ -13,22 +13,31 @@ Details: in order to use this node you need to provide a input mesh which is def
 #ifndef STRESSMAP_H
 #define STRESSMAP_H
 
+#include <vector>
+#include <stdlib.h>
+
+#include <maya/MMatrix.h>
+#include <maya/MGlobal.h>
+#include <maya/MPoint.h>
+#include <maya/MPlug.h>
 
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnTypedAttribute.h>
+#include <maya/MFnEnumAttribute.h>
+#include <maya/MFnMatrixAttribute.h>
+#include <maya/MFnCompoundAttribute.h>
+#include <maya/MFnDoubleArrayData.h>
+#include <maya/MFnIntArrayData.h>
 #include <maya/MFnMesh.h>
+
+#include <maya/MPxLocatorNode.h>
+#include <maya/MDataHandle.h>
 #include <maya/MDataBlock.h>
 #include <maya/MItGeometry.h>
-#include <maya/MPoint.h>
-#include <maya/MFnIntArrayData.h>
 #include <maya/MPointArray.h>
 #include <maya/MDoubleArray.h>
-#include <maya/MMatrix.h>
-#include <maya/MGlobal.h>
 #include <maya/MItMeshPolygon.h>
-#include <maya/MDataHandle.h>
-#include <vector>
-#include <maya/MPxLocatorNode.h>
+#include <maya/MItMeshVertex.h>
 
 class StressPoint
 {
@@ -102,7 +111,7 @@ public:	StressMap();
 	/*
 		to store the stress values
 	*/
-	MDoubleArray stressMapValues;
+	MDoubleArray aStressMapValues;
 	/*
 		the attribute to output the result
 	*/

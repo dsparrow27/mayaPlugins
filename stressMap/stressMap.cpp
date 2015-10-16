@@ -4,9 +4,23 @@
 MTypeId	StressMap::id(0x00124511);
 MObject StressMap::aIsDrawing;
 MObject StressMap::aIsTransparent;
+MObject StressMap::aFakeOut;
+MObject StressMap::aInputMesh;
+MObject StressMap::aReferenceMesh;
+MObject StressMap::aOutput;
+MObject StressMap::aMultiplier;
+MObject StressMap::aClampMax;
+MObject StressMap::aNormalize;
+MObject StressMap::aSquashColor;
+MObject StressMap::aStretchColor;
+MObject StressMap::aIntensity;
+
 
 StressMap::StressMap()
 {
+	//constructor
+	//if 0 then cache our data from the reference mesh else leave
+	firstRun = 0;
 }
 
 
@@ -61,29 +75,29 @@ void StressMap::draw(M3dView& view,
 
 	switch (status)
 	{
-	case M3dView::kActive:
-		//white
-		solidColor = MColor(1.0f, 1.0f, 1.0f, 0.1f);
-		break;
-	case M3dView::kLead:
-		//green
-		solidColor = MColor(0.26f, 1.0f, 0.64f, 0.1f);
-		break;
+		case M3dView::kActive:
+			//white
+			solidColor = MColor(1.0f, 1.0f, 1.0f, 0.1f);
+			break;
+		case M3dView::kLead:
+			//green
+			solidColor = MColor(0.26f, 1.0f, 0.64f, 0.1f);
+			break;
 
-	case M3dView::kActiveAffected:
-		// maya magenta
-		solidColor = MColor(0.78f, 1.0f, 0.78f);
-		break;
+		case M3dView::kActiveAffected:
+			// maya magenta
+			solidColor = MColor(0.78f, 1.0f, 0.78f);
+			break;
 
-	case M3dView::kTemplate:
-		// maya template gray
-		solidColor = MColor(0.47f, 0.47f, 0.47f);
-		break;
+		case M3dView::kTemplate:
+			// maya template gray
+			solidColor = MColor(0.47f, 0.47f, 0.47f);
+			break;
 
-	case M3dView::kActiveTemplate:
-		// maya selected template pink
-		solidColor = MColor(1.0f, 0.47f, 0.47f);
-		break;
+		case M3dView::kActiveTemplate:
+			// maya selected template pink
+			solidColor = MColor(1.0f, 0.47f, 0.47f);
+			break;
 	}
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
@@ -109,8 +123,33 @@ bool StressMap::isTransparent() const
 
 MStatus StressMap::initialize()
 {
-	//standard attribute creation for the locator node 
 	MStatus status;
+	//standard attribute creation for the locator node 
+	MFnEnumAttribute eAttr;
+	MFnMatrixAttribute mAttr;
+	MFnNumericAttribute nAttr;
+	MFnCompoundAttribute cAttr;
+	MFnTypedAttribute tAttr;
+
+	//inputMesh
+	aInputMesh = tAttr.create("inputMesh", "inputM", MFnData::kMesh);
+	addAttribute(aInputMesh);
+	//referenceMesh
+	aReferenceMesh = tAttr.create("referenceMesh", "refM", MFnData::kMesh);
+	tAttr.setStorable(true);
+	addAttribute(aReferenceMesh);
+
+	//drawing
+	aIsDrawing = nAttr.create("draw", "draw", MFnNumericData::kBoolean, 1);
+	nAttr.setKeyable(true);
+	nAttr.setStorable(true);
+	addAttribute(aIsDrawing);
+	//transparent
+	aIsTransparent = nAttr.create("transparent", "trp", MFnNumericData::kBoolean, 1);
+	nAttr.setKeyable(true);
+	nAttr.setStorable(true);
+	addAttribute(aIsTransparent);
+
 	return MS::kSuccess;
 }
 
