@@ -126,6 +126,6 @@ MStatus VertSnapCommand::getShapeNode(MDagPath& path)
 MStatus VertSnapCommand::calculateVertexMapping()
 {
 	MStatus status;
-
+	//still need to do this 
 	return MS::kSuccess;
 }

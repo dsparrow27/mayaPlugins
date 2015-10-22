@@ -20,6 +20,7 @@ Details: in order to use this node you need to provide a input mesh which is def
 #include <maya/MGlobal.h>
 #include <maya/MPoint.h>
 #include <maya/MPlug.h>
+#include <maya/MString.h>
 
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnTypedAttribute.h>
@@ -42,6 +43,7 @@ Details: in order to use this node you need to provide a input mesh which is def
 class StressPoint
 {
 public:
+	//data storage for any given point
 	MIntArray neighbours;
 	MDoubleArray neighboursStress;
 	int size;
@@ -68,7 +70,11 @@ public:	StressMap();
 	static MStatus initialize();
 
 	//evaluate the reference mesh
-	void buildConnectTree(std::vector<StressPoint>&pointTree, MDoubleArray &stressmapValues, MObject referenceMesh);
+	/*
+		to store the stress values
+	*/
+	MDoubleArray stressMapValues;
+	void buildConnectTree(std::vector<StressPoint>&pointTree, MDoubleArray &stressMapValues, MObject referenceMesh);
 	//for drawing the locator
 	void stressLine(MPoint& p,
 					double& stress,
@@ -77,7 +83,9 @@ public:	StressMap();
 					const double& mult);
 
 	int firstRun;
+	//for storing Mpoints of the reference mesh
 	MPointArray referencePos;
+	//for storing MPoints of the inputmesh
 	MPointArray inputPos;
 
 	/*
@@ -109,10 +117,6 @@ public:	StressMap();
 	*/
 	std::vector<StressPoint> pointStoredTree;
 	/*
-		to store the stress values
-	*/
-	MDoubleArray aStressMapValues;
-	/*
 		the attribute to output the result
 	*/
 	static MObject aOutput;
@@ -142,7 +146,10 @@ public:	StressMap();
 		attribute for the color intensity
 	*/
 	static MObject aIntensity;
-
+	/*
+		attribute for opengl line width
+	*/
+	static MObject aLineWidth;
 
 };
 
