@@ -1,5 +1,5 @@
-#ifndef BULGEDEFORMER_H
-#define BULGEDEFORMER_H
+#ifndef PUSHDEFORMER_H
+#define PUSHDEFORMER_H
 
 #include <maya/MPxDeformerNode.h>
 #include <maya/MFnNumericAttribute.h>
@@ -11,11 +11,13 @@
 #include <maya/MFloatVectorArray.h>
 #include <maya/MPoint.h>
 #include <maya/MPointArray.h>
+#include <maya/MFnTypedAttribute.h>
+#include <maya/MFnDoubleArrayData.h>
 
-class BulgeDeformer : public MPxDeformerNode
+
+class PushDeformer : public MPxDeformerNode
 {
-public:	BulgeDeformer();
-		virtual			~BulgeDeformer();
+public:	PushDeformer();
 
 	static void* creator();
 
@@ -28,8 +30,9 @@ public:	BulgeDeformer();
 
 	static MTypeId id;
 
-	static MObject aBulgeAmount;
-
+	static MObject aAmount;
+	static MObject aStressMap;
+	static MObject aUseStress;
 
 
 };

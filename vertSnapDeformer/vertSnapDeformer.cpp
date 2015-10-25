@@ -20,7 +20,10 @@ VertSnapDeformer::VertSnapDeformer()
 	//an array for id association
 	bindArray = MIntArray();
 }
+VertSnapDeformer::~VertSnapDeformer()
+{
 
+}
 
 void* VertSnapDeformer::creator()
 {
@@ -41,14 +44,22 @@ MStatus	VertSnapDeformer::deform(MDataBlock& dataBlock,
 	}
 
 	//get driverMesh
-	MObject oDriverMesh = dataBlock.inputValue(aDriverMesh).asMesh();
+	MObject oDriverMesh = dataBlock.inputValue(aDriverMesh, &status).asMesh();
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 	//get vertex mapping
-	MArrayDataHandle mMapData = dataBlock.inputArrayValue(aIdMapping);
+	MArrayDataHandle mMapData = dataBlock.inputArrayValue(aIdMapping, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 	mMapData.jumpToArrayElement(0);
 	//get the envelope
-	double env = dataBlock.inputValue(envelope).asFloat();
-	bool rebindV = dataBlock.inputValue(aRebind).asBool();
+	double env = dataBlock.inputValue(envelope, &status).asFloat();
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	bool rebindV = dataBlock.inputValue(aRebind, &status).asBool();
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 	
+	if (env == 0.0)
+	{
+		return MS::kSuccess;
+	}
 	//get vertices in world space
 	MPointArray	driverPnts;
 	MFnMesh fnMesh(oDriverMesh, &status);
@@ -67,25 +78,28 @@ MStatus	VertSnapDeformer::deform(MDataBlock& dataBlock,
 	//
 	if (elemCount == 0)
 	{
-		elemCount = itGeo.exactCount();
+		elemCount = itGeo.exactCount(&status);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
 	}
 
-	int  arrayLength = bindArray.length();
-
+	int arrayLength = bindArray.length();
 	if (elemCount != arrayLength || initialized == 0 || arrayLength == 0)
 	{
 		//read from attribute 
 		ensureIndexes(aIdMapping, itGeo.exactCount());
 
 		//loop the attribute and read the value
-		MArrayDataHandle idsHandle = dataBlock.inputArrayValue(aIdMapping);
+		MArrayDataHandle idsHandle = dataBlock.inputArrayValue(aIdMapping, &status);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
 		idsHandle.jumpToArrayElement(0);
 
-		int count = itGeo.exactCount();
+		int count = itGeo.exactCount(&status);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
 		bindArray.setLength(count);
-		for (int i = 0; i < count; i++, idsHandle.next())
+		for (int i=0; i<count; i++, idsHandle.next())
 		{
-			bindArray[i] = idsHandle.inputValue().asInt();
+			bindArray[i] = idsHandle.inputValue(&status).asInt();
+			CHECK_MSTATUS_AND_RETURN_IT(status);
 
 		}
 		//set value in controller variables
@@ -98,16 +112,16 @@ MStatus	VertSnapDeformer::deform(MDataBlock& dataBlock,
 		return MS::kSuccess;
 	}
 	
-	
 	//loop all the elements and set the size
 	MVector delta, current, target;
-	for (int i = 0; i < elemCount; i++)
+	float w;
+	for (unsigned int i=0; i<elemCount; i++)
 	{
-		double w = weightValue(dataBlock, geomIndex, itGeo.index());
+		
 		//compute the delta from the input position and final position
 		delta = driverPnts[bindArray[i]] - pos[i];
 		//scale the vector to calculate envelopes
-		pos[i] = pos[i] + (delta * env * w);
+		pos[i] = pos[i] + (delta * env );
 	}
 	//dump all vertex positions
 	itGeo.setAllPositions(pos);
@@ -122,28 +136,28 @@ MStatus	VertSnapDeformer::initialize()
 	MFnTypedAttribute	tAttr;
 	MFnNumericAttribute nAttr;
 	//rebinding attribute
-	aRebind = nAttr.create("rebind", "rbn", MFnNumericData::kBoolean, 0);
+	aRebind = nAttr.create("rebind", "rbn", MFnNumericData::kBoolean, 0, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 	nAttr.setKeyable(true);
-	nAttr.setWritable(true);
-	addAttribute(aRebind);
-	//mesh to reference
-	aReferenceMesh = tAttr.create("ReferenceMesh", "ReferenceMesh", MFnData::kMesh);
-	addAttribute(aReferenceMesh);
-	//stores our vertex assignment
-	aIdMapping = nAttr.create("vertexMapping", "vertexMapping", MFnNumericData::kInt, 0);
-	nAttr.setHidden(true);
-	nAttr.setArray(true);
 	nAttr.setStorable(true);
-	nAttr.setConnectable(false);
+	addAttribute(aRebind);
+	//stores our vertex assignment
+	aIdMapping = nAttr.create("vertexMapping", "vertexMapping", MFnNumericData::kInt, 0, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	nAttr.setArray(true);
+	nAttr.setKeyable(true);
+	nAttr.setStorable(true);
 	addAttribute(aIdMapping);
 	//driving mesh
 	aDriverMesh = tAttr.create("driverMesh", "drm", MFnData::kMesh);
+	tAttr.setKeyable(true);
+	tAttr.setStorable(true);
 	addAttribute(aDriverMesh);
 
 	attributeAffects(aDriverMesh, outputGeom);
-	attributeAffects(aIdMapping, outputGeom);
+	attributeAffects(aRebind, outputGeom);
 
-	MGlobal::executeCommand("makepaintable -attrType multiFloat -sm deformer snapDeformer weights");
+	MGlobal::executeCommand("makePaintable -attrType multiFloat -sm deformer meshSnap weights");
 
 	return MS::kSuccess;
 }
@@ -169,15 +183,14 @@ void VertSnapDeformer::initData(MObject& driverMesh, MPointArray& deformerPoints
 	MIntArray vertices;
 	double minDist, dist;
 	MVector base, end, vec;
-	auto accelerator = MFnMesh::autoUniformGridParams();
-	for (int i = 0; i < count; i++)
+	
+	for (int i=0; i<count; i++)
 	{
 		//get the closest face
 		meshFn.getClosestPoint(deformerPoints[i],
 									closest,
 									MSpace::kWorld,
-									&closestFace,
-									&accelerator);
+									&closestFace);
 		//find the closest vertex
 		faceIter.setIndex(closestFace, oldIndex);
 		vertices.setLength(0);
@@ -187,7 +200,7 @@ void VertSnapDeformer::initData(MObject& driverMesh, MPointArray& deformerPoints
 		base = MVector(closest);
 		minDist = BIG_DIST;
 
-		for (v = 0; v < vertices.length(); v++)
+		for (v=0; v<vertices.length(); v++)
 		{
 			//this is the end vector
 			end = MVector(driverPoints[vertices[v]]);

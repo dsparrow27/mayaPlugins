@@ -35,29 +35,29 @@ MStatus BulgeDeformer::deform(MDataBlock& dataBlock,
 	status = hInput.jumpToElement(geomIndex);
 	//get the handle of geomIndex attribute
 	MDataHandle hInputElement = hInput.outputValue(&status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 	//Get the MObject of the input geometry of geomindex
 	MObject oInputGeom = hInputElement.child(inputGeom).asMesh();
 
 	MFnMesh fnMesh(oInputGeom, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	MFloatVectorArray normals;
-	fnMesh.getVertexNormals(false, normals);
+	fnMesh.getNormals(normals, MSpace::kWorld);
 	
-	MPoint point;
+	MPointArray points;
+	itGeo.allPositions(points, MSpace::kWorld);
+	
 	//weights
 	float w;
 
-	for (; !itGeo.isDone(); itGeo.next())
+	for (int i=0; i<itGeo.exactCount(); i++)
 	{
 		w = weightValue(dataBlock, geomIndex, itGeo.index());
-		point = itGeo.position();
 		//deform
-		point += normals[itGeo.index()] * bulgeAmount * w * env;
-		point += normals[itGeo.index()] * (bulgeAmount);
-		std::cout << point << endl;
-		itGeo.setPosition(point);
+		points[i] += (MVector(normals[i]) * bulgeAmount * w * env);
+		
 	}
-
+	itGeo.setAllPositions(points);
 	return MS::kSuccess;
 
 }
