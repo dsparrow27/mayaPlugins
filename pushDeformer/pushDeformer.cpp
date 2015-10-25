@@ -8,10 +8,13 @@ PushDeformer::PushDeformer()
 {
 
 }
+
+
 void* PushDeformer::creator()
 {
 	return new PushDeformer();
 }
+
 
 MStatus PushDeformer::deform(MDataBlock& dataBlock,
 								MItGeometry& itGeo,
@@ -22,11 +25,11 @@ MStatus PushDeformer::deform(MDataBlock& dataBlock,
 	//get attribute handles
 	double bulgeAmount = dataBlock.inputValue(aAmount, &status).asDouble();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	double env = dataBlock.inputValue(envelope, &status).asDouble();
+	float env = dataBlock.inputValue(envelope, &status).asFloat();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	bool useStressV = dataBlock.inputValue(aUseStress, &status).asBool();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	if (env == 0.0)
+	if (env <= 0.001)
 	{
 		return MS::kSuccess;
 	}
@@ -61,22 +64,21 @@ MStatus PushDeformer::deform(MDataBlock& dataBlock,
 	itGeo.allPositions(points, MSpace::kWorld);
 	
 	//weights
-	double w;
+	float w;
 
 	for (; !itGeo.isDone(); itGeo.next())
 	{
 		w = weightValue(dataBlock, geomIndex, itGeo.index());
-		if (useStressV == true)
+		if (useStressV == true && (stressV.length() > 0))
 		{
 			//deform
-			points[itGeo.index()] += (MVector(normals[itGeo.index()]) * bulgeAmount * env * stressV[itGeo.index()]);
-			points[itGeo.index()] += (MVector(normals[itGeo.index()]) * bulgeAmount);
+			points[itGeo.index()] += (MVector(normals[itGeo.index()]) * bulgeAmount * env * w * stressV[itGeo.index()]);
+			
 		}
 		else
 		{
 			//deform
-			points[itGeo.index()] += (MVector(normals[itGeo.index()]) * bulgeAmount * env * w);
-			points[itGeo.index()] += (MVector(normals[itGeo.index()]) * bulgeAmount);
+			points[itGeo.index()] += normals[itGeo.index()] * bulgeAmount * env * w;
 
 		}
 	}
