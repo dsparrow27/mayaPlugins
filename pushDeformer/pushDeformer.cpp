@@ -60,7 +60,7 @@ MStatus PushDeformer::deform(MDataBlock& dataBlock,
 
 	MFloatVectorArray normals;
 	MPointArray points;
-	fnMesh.getNormals(normals, MSpace::kWorld);
+	fnMesh.getVertexNormals(false, normals, MSpace::kWorld);
 	itGeo.allPositions(points, MSpace::kWorld);
 	
 	//weights
