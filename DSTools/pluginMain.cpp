@@ -1,9 +1,6 @@
-#include "bulgeDeformer.h"
 #include "blendShapeDeformer.h"
 #include "dsSculptDeformer.h"
 #include "rippleDeformer.h"
-#include "vertSnapCommand.h"
-#include "vertSnapDeformer.h"
 #include "reflectionLocator.h"
 #include "aimNode.h"
 #include <maya/MFnPlugin.h>
@@ -15,12 +12,6 @@ MStatus initializePlugin(MObject obj)
 	MFnPlugin fnplugin(obj, "David Sparrow", "1.0", "any");
 
 	//register the deformerNode
-	status = fnplugin.registerNode("bulgeDeformer", 
-		BulgeDeformer::id, 
-		BulgeDeformer::creator,
-		BulgeDeformer::initialize,
-		MPxNode::kDeformerNode);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	status = fnplugin.registerNode("blendShapeDeformer", 
 		BlendShapeDeformer::id, 
@@ -57,7 +48,10 @@ MStatus initializePlugin(MObject obj)
 		RippleDeformer::initialize,
 		MPxNode::kDependNode);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
+<<<<<<< HEAD
 	//vertSnap command and deformer
+=======
+>>>>>>> 0e6e6e9da3aa017d9a2a61278a85de73b079ca7d
 
 	return MS::kSuccess;
 
@@ -70,9 +64,6 @@ MStatus uninitializePlugin(MObject obj)
 	MFnPlugin plugin(obj);
 
 	//deregister the deformerNode
-	status = plugin.deregisterNode(BulgeDeformer::id);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
-
 	status = plugin.deregisterNode(BlendShapeDeformer::id);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	

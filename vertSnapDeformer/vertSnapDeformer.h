@@ -2,6 +2,9 @@
 This deformer node drive's a mesh with another based based on closest point
 mesh is weight paintable
 	todo: kdtree for finding closest point
+@author: David Sparrow
+@Date: 17/10/2015
+@
 */
 #ifndef VERTSNAPDEFORMER_H
 #define VERTSNAPDEFORMER_H
@@ -13,10 +16,8 @@ mesh is weight paintable
 #include <maya/MFnMesh.h>
 #include <maya/MDataBlock.h>
 #include <maya/MItGeometry.h>
-#include <maya/MPoint.h>
 #include <maya/MFnIntArrayData.h>
 #include <maya/MPointArray.h>
-#include <maya/MMatrix.h>
 #include <maya/MGlobal.h>
 #include <maya/MItMeshPolygon.h>
 #include <maya/MDataHandle.h>
@@ -24,8 +25,9 @@ mesh is weight paintable
 
 class VertSnapDeformer : public MPxDeformerNode
 {
-public : VertSnapDeformer();
-	
+public : 
+	VertSnapDeformer();
+	virtual	~VertSnapDeformer();
 	virtual MStatus deform(MDataBlock& dataBlock,
 							MItGeometry& itGeo,
 							const MMatrix& localToWorldMatrix,
@@ -34,6 +36,17 @@ public : VertSnapDeformer();
 	virtual MStatus shouldSave(const MPlug& plug, bool& result);
 	static void*	creator();
 	static MStatus	initialize();
+private:
+	//methods
+	//for creating / initalizing the vertex aasignment
+	void initData(MObject& driverMesh,
+		MPointArray& deformerPoints,
+		MIntArray& bindArray,
+		MObject& attribute);
+	//
+	void ensureIndexes(MObject& attribute,
+		int indexSize);
+public:
 	/*
 		Stores the node Id
 	*/
@@ -56,14 +69,6 @@ public : VertSnapDeformer();
 	static MObject aRebind;
 
 private:
-	//methods
-	//for creating / initalizing the vertex aasignment
-	void initData(MObject& driverMesh,
-				  MPointArray& deformerPoints,
-				  MIntArray& bindArray,
-				  MObject& attribute);
-	//
-	void ensureIndexes(MObject& attribute, int indexSize);
 	//variables
 	unsigned int elemCount;
 	MIntArray bindArray;

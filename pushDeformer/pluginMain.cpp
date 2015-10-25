@@ -1,4 +1,4 @@
-#include "stressMap.h"
+#include "pushDeformer.h"
 #include <maya/MFnPlugin.h>
 
 
@@ -8,15 +8,14 @@ MStatus initializePlugin(MObject obj)
 	MFnPlugin fnplugin(obj, "David Sparrow", "1.0", "any");
 
 	//register the deformerNode
-	status = fnplugin.registerNode("stressMap",
-		StressMap::id,
-		StressMap::creator,
-		StressMap::initialize,
-		StressMap::kLocatorNode);
+	status = fnplugin.registerNode("pushDeformer", 
+		PushDeformer::id,
+		PushDeformer::creator,
+		PushDeformer::initialize,
+		MPxNode::kDeformerNode);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	return MS::kSuccess;
-
 }
 
 MStatus uninitializePlugin(MObject obj)
@@ -24,9 +23,11 @@ MStatus uninitializePlugin(MObject obj)
 	MStatus status;
 	MFnPlugin plugin(obj);
 
-	status = plugin.deregisterNode(StressMap::id);
+	//deregister the deformerNode
+	status = plugin.deregisterNode(PushDeformer::id);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	return MS::kSuccess;
+
 
 }
