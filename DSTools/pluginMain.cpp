@@ -59,18 +59,6 @@ MStatus initializePlugin(MObject obj)
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	//vertSnap command and deformer
 
-	status = fnplugin.registerCommand("vertSnap",
-		VertSnapCommand::creator,
-		VertSnapCommand::newSyntax);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
-
-	status = fnplugin.registerNode("meshSnap",
-		VertSnapDeformer::id,
-		VertSnapDeformer::creator,
-		VertSnapDeformer::initialize,
-		MPxNode::kDeformerNode);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
-
 	return MS::kSuccess;
 
 	
@@ -98,13 +86,6 @@ MStatus uninitializePlugin(MObject obj)
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	status = plugin.deregisterNode(AimNode::id);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
-
-	//deregister meshSnapCommand and deformer
-	status = plugin.deregisterCommand("meshSnap");
-	CHECK_MSTATUS_AND_RETURN_IT(status);
-
-	status = plugin.deregisterNode(VertSnapDeformer::id);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	return MS::kSuccess;
