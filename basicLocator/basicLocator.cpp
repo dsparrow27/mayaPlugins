@@ -22,7 +22,7 @@ void BasicLocator::postConstructor()
 	//rename the locator shape post construction
 	MObject oThis = thisMObject();
 	MFnDependencyNode fnNode(oThis);
-	fnNode.setName("basicLocator#");
+	fnNode.setName("basicLocatorShape#");
 
 }
 

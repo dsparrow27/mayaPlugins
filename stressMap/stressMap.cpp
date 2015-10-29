@@ -545,6 +545,8 @@ void StressMap::buildConnectTree(std::vector<StressPoint>&pointTree,
 	//get the mesh points
 	MPointArray points;
 	meshFn.getPoints(points);
+	//need to create a copy of the point array to work with
+	std::copy(points);
 
 	int size = points.length();
 	//allocate memory for the arrays
