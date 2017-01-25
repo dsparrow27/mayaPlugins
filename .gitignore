@@ -163,6 +163,7 @@ ClientBin/
 *.filters
 *.sln
 *.suo
+*.opendb
 node_modules/
 
 # RIA/Silverlight projects
