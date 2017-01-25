@@ -29,7 +29,7 @@ MStatus ParentSingle::compute(const MPlug& plug, MDataBlock& dataBlock)
 {
 	MStatus status = MS::kUnknownParameter;
 	
-	if ((plug == aOutTranslate) || (plug == aOutRotate) || (plug == aOutScale) || (plug == aOutSrt) || (plug == aOutRotationOrder))
+	if (plug == aOutTranslate || plug == aOutRotate || plug.parent() == aOutRotate || plug == aOutScale || plug == aOutSrt || plug == aOutRotationOrder)
 	{
 		MMatrix inParentInverse = dataBlock.inputValue(aParentInverse).asMatrix();
 		MMatrix inOffsetMatrix = dataBlock.inputValue(aOffsetMatrix).asMatrix();
