@@ -345,25 +345,25 @@ MStatus Clamp::compute(const MPlug& plug, MDataBlock& dataBlock)
 		double mn = dataBlock.inputValue(aMin).asDouble();
 		double mx = dataBlock.inputValue(aMax).asDouble();
 
-		MDataHandle operands = dataBlock.inputValue(aOperands);
-		MFnDoubleArrayData operandsArrayData(operands.data());
-		MDoubleArray operandsArray = operandsArrayData.array();
+		MArrayDataHandle inOperands = dataBlock.inputArrayValue(aOperands);
+		MArrayDataHandle inResult = dataBlock.outputValue(aResult, &status);
+		unsigned int inCount = inOperands.elementCount();
+		MArrayDataBuilder resultBuilder = inResult.builder();
 
-		int count = operandsArrayData.length();
-		MDoubleArray resultArray(count);
-		double value;
-
-		for (int i = 0; i < count; i++)
+		for (unsigned int i = 0; i < inResult.elementCount(); i++)
 		{
-			value = max(mn, min(operandsArray[i], mx));
-			resultArray.set(value, i);
+			resultBuilder.removeElement(i);
 		}
+		resultBuilder.growArray(inCount);
+		for (unsigned int i = 0; i < inCount; i++)
+		{
+			MDataHandle currentDataHandle = resultBuilder.addElement(i);
+			inOperands.jumpToArrayElement(i);
+			currentDataHandle.setDouble(max(mn, min(inOperands.inputValue().asDouble(), mx)));
 
-		MDataHandle out = dataBlock.outputValue(aResult);
-		MFnDoubleArrayData outputArrayData;
-		MObject outputData = outputArrayData.create(resultArray);
-		out.setMObject(outputData);
-		out.setClean();
+		}
+		inResult.set(resultBuilder);
+		inResult.setAllClean();
 		status = MS::kSuccess;
 	}
 	return status;
@@ -378,6 +378,7 @@ MStatus Clamp::initialize()
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	nAttr.setKeyable(false); nAttr.setStorable(false);
 	nAttr.setWritable(false); nAttr.setArray(true);
+	nAttr.setUsesArrayDataBuilder(true);
 	nAttr.setUsesArrayDataBuilder(true);
 	addAttribute(aResult);
 
@@ -399,8 +400,7 @@ MStatus Clamp::initialize()
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	nAttr.setKeyable(true); nAttr.setStorable(true);
 	nAttr.setWritable(true); nAttr.setArray(true);
-	nAttr.setUsesArrayDataBuilder(true); nAttr.setChannelBox(true);
-	nAttr.setConnectable(true);
+	nAttr.setChannelBox(true); nAttr.setConnectable(true);
 	addAttribute(aOperands);
 
 	attributeAffects(aOperands, aResult);

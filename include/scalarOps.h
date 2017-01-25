@@ -10,6 +10,7 @@
 #include "maya/MDoubleArray.h"
 #include "maya/MFnDoubleArrayData.h"
 #include "maya/MAngle.h"
+#include "maya/MArrayDataBuilder.h"
 #include <cmath>
 
 
