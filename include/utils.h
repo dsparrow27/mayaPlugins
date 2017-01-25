@@ -6,6 +6,7 @@
 #include "maya/MFnNumericAttribute.h"
 #include "maya/MString.h"
 #include "maya/MVector.h"
+#include "maya/MQuaternion.h"
 namespace utils
 {
 	MTransformationMatrix::RotationOrder rotationOrderByIndex(int rotOrder);
@@ -13,4 +14,6 @@ namespace utils
 	bool almostEqual(float x, float y, int tailCount);
 	MVector lerp(MVector goal, MVector current, float blend);
 	float lerp(float goal, float current, float blend);
+	MQuaternion slerp(MQuaternion qa, MQuaternion qb, double blend);
+	double dot(MQuaternion qa, MQuaternion qb);
 };
