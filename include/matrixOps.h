@@ -14,29 +14,24 @@
 #include "maya/MPxNode.h"
 
 
-class ParentDual :public MPxNode
+class MatrixBlend :public MPxNode
 {
 public:
 	virtual void postConstructor();
 	virtual MStatus compute(const MPlug& plug, MDataBlock& datablock);
-	static void* creator() { return new ParentDual; };
+	static void* creator() { return new MatrixBlend; };
 	virtual const int schedulingType() { return kParallel; };
 	static MStatus initialize();
 	static MTypeId kId;
 	static MString kName;
 
-	static MObject aParentInverse;
+
 	static MObject aBlend;
 	static MObject aMatrixInA;
 	static MObject aMatrixInB;
 	static MObject aRotationOrder;
 
-	static MObject aOutSrt;
-		static MObject aOutRotate;
-		static MObject aOutRotateX;
-		static MObject aOutRotateY;
-		static MObject aOutRotateZ;
-		static MObject aOutTranslate;
-		static MObject aOutScale;
-		static MObject aOutRotationOrder;
+	static MObject aOutMatrix;
+	static MObject aOutRotationOrder;
+
 };	

@@ -44,19 +44,15 @@ using namespace utils;
 	{
 		return (1 - blend) * goal + (blend* current);
 	}
-	double utils::lerp(double goal, double current, double blend)
-	{
-		return (1 - blend) * goal + (blend* current);
-	}
+
 	MVector utils::lerp(MVector goal, MVector current, float blend)
 	{
-		return (1 - blend) * goal + (blend* current);
+		return (goal * blend) + ((1.0 - blend) * current);
 	}
 	
 	double utils::dot(MQuaternion qa, MQuaternion qb)
 	{
-		double dot = qa.w * qb.w + qa.x*qb.x + qa.y*qb.y + qa.z*qb.z;
-		return dot;
+		return qa.w * qb.w + qa.x*qb.x + qa.y*qb.y + qa.z*qb.z;
 	}
 	MQuaternion utils::slerp(MQuaternion qa, MQuaternion qb, float blend)
 	{

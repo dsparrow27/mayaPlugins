@@ -9,7 +9,7 @@
 #include "vectorOps.h"
 #include "metaNode.h"
 #include "parentSingle.h"
-#include "parentDual.h"
+#include "matrixOps.h"
 #include "aimNode.h"
 
 const char* kAUTHOR = "David Sparrow";
@@ -31,7 +31,6 @@ MTypeId PushDeformer::kId = mayaIds::PUSHDEFORMER_ID;
 MTypeId PointOnCurve::kId = mayaIds::POINTONCURVE_ID;
 MTypeId MetaNode::kId = mayaIds::METANODE_ID;
 MTypeId ParentSingle::kId = mayaIds::PARENTSINGLE_ID;
-MTypeId ParentDual::kId = mayaIds::PARENTDUAL_ID;
 MTypeId Gaussian::kId = mayaIds::GAUSSIAN_ID;
 MTypeId AimNode::kId = mayaIds::AIM_ID;
 MTypeId VectorSum::kId = mayaIds::VECTORSUM_ID;
@@ -45,6 +44,7 @@ MTypeId Remap::kId = mayaIds::REMAP_ID;
 MTypeId AngularSine::kId = mayaIds::ANGULARSINE_ID;
 MTypeId AngularCosine::kId = mayaIds::ANGULARCOSINE_ID;
 MTypeId AngularTan::kId = mayaIds::ANGULARTAN_ID;
+MTypeId MatrixBlend::kId = mayaIds::MATRIXBLEND_ID;
 
 MString Substract::kName = "ds_substract";
 MString Sum::kName = "ds_sum";
@@ -61,7 +61,6 @@ MString PushDeformer::kName = "ds_pushDeformer";
 MString PointOnCurve::kName = "ds_pointOnCurve";
 MString MetaNode::kName = "ds_metaNode";
 MString ParentSingle::kName = "ds_parentSingle";
-MString ParentDual::kName = "ds_parentDual";
 MString Gaussian::kName = "ds_gaussian";
 MString AimNode::kName = "ds_aim";
 MString VectorSum::kName = "ds_vectorSum";
@@ -75,6 +74,7 @@ MString Remap::kName = "ds_remapScalar";
 MString AngularSine::kName = "ds_angularSine";
 MString AngularCosine::kName = "ds_angularCosine";
 MString AngularTan::kName = "ds_angularTan";
+MString MatrixBlend::kName = "ds_MatrixBlend";
 
 #define REGISTER_NODE(NODE, TYPE)	\
     status = fnPlugin.registerNode(NODE::kName,NODE::kId,NODE::creator, NODE::initialize, TYPE);	\
@@ -103,7 +103,6 @@ MStatus initializePlugin(MObject obj)
 	REGISTER_NODE(MetaNode, MPxNode::kDependNode);
 	REGISTER_NODE(BlendPair, MPxNode::kDependNode);
 	REGISTER_NODE(ParentSingle, MPxNode::kDependNode);
-	REGISTER_NODE(ParentDual, MPxNode::kDependNode);
 	REGISTER_NODE(Gaussian, MPxNode::kDependNode);
 	REGISTER_NODE(AimNode, MPxNode::kDependNode);
 	REGISTER_NODE(VectorSum, MPxNode::kDependNode);
@@ -117,7 +116,7 @@ MStatus initializePlugin(MObject obj)
 	REGISTER_NODE(AngularSine, MPxNode::kDependNode);
 	REGISTER_NODE(AngularCosine, MPxNode::kDependNode);
 	REGISTER_NODE(AngularTan, MPxNode::kDependNode);
-
+	REGISTER_NODE(MatrixBlend, MPxNode::kDependNode);
 	return MS::kSuccess;
 }
 
@@ -139,7 +138,6 @@ MStatus uninitializePlugin(MObject obj)
 	DEREGISTER_NODE(MetaNode);
 	DEREGISTER_NODE(BlendPair);
 	DEREGISTER_NODE(ParentSingle);
-	DEREGISTER_NODE(ParentDual);
 	DEREGISTER_NODE(Gaussian);
 	DEREGISTER_NODE(AimNode);
 	DEREGISTER_NODE(VectorSum);
@@ -153,7 +151,7 @@ MStatus uninitializePlugin(MObject obj)
 	DEREGISTER_NODE(AngularSine);
 	DEREGISTER_NODE(AngularCosine);
 	DEREGISTER_NODE(AngularTan);
-
+	DEREGISTER_NODE(MatrixBlend);
 	return MS::kSuccess;
 
 }

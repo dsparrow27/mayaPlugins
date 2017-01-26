@@ -16,10 +16,11 @@ MObject VectorCross::aResult;
 MObject VectorDot::aVecA;
 MObject VectorDot::aVecB;
 MObject VectorDot::aResult;
-MObject VectorBlendPair::aValueA;
-MObject VectorBlendPair::aValueB;
-MObject VectorBlendPair::aBlend;
-MObject VectorBlendPair::aResult;
+MObject VectorBlendPair::avecA;
+MObject VectorBlendPair::avecB;
+MObject VectorBlendPair::ablend;
+MObject VectorBlendPair::aOutVec;
+
 
 void VectorSum::postConstructor()
 {
@@ -378,15 +379,20 @@ void VectorBlendPair::postConstructor()
 MStatus VectorBlendPair::compute(const MPlug& plug, MDataBlock& dataBlock)
 {
 	MStatus status = MS::kUnknownParameter;
-	if (plug == aResult)
+	if (plug == aOutVec)
 	{
-		MVector vecA = dataBlock.inputValue(aValueA).asVector();
-		MVector vecB = dataBlock.inputValue(aValueB).asVector();
-		float blend = dataBlock.inputValue(aBlend).asFloat();
-		MDataHandle out = dataBlock.outputValue(aResult);
-		MVector result = utils::lerp(vecB, vecA, blend);
-		out.setMVector(result);
-		out.setClean();
+		// inputs
+		MVector vA = dataBlock.inputValue(avecA).asFloatVector();
+		MVector vB = dataBlock.inputValue(avecB).asFloatVector();
+		
+		float inBlend = dataBlock.inputValue(ablend, &status).asFloat();
+		MVector vecResult = utils::lerp(vB, vA, inBlend);
+		
+		// Output
+		MDataHandle hOut = dataBlock.outputValue(aOutVec, &status);
+		hOut.set3Float((float)vecResult.x, (float)vecResult.y, (float)vecResult.z);
+		hOut.setClean();
+
 		status = MS::kSuccess;
 	}
 	return status;
@@ -395,36 +401,42 @@ MStatus VectorBlendPair::initialize()
 {
 	MStatus status;
 	MFnNumericAttribute nAttr;
+	//Inputs
+	avecA = nAttr.createPoint("vectorA", "vectorA", &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	nAttr.setKeyable(true);
+	nAttr.setStorable(false);
+	addAttribute(avecA);
 
-	aValueA = nAttr.createPoint("vectorA", "vecA", &status);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setKeyable(true); nAttr.setStorable(true);
-	nAttr.setWritable(true); nAttr.setChannelBox(true);
-	nAttr.setConnectable(true);
-	addAttribute(aValueA);
 
-	aValueB = nAttr.createPoint("vectorB", "vecB", &status);
+	avecB = nAttr.createPoint("vectorB", "vectorB", &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setKeyable(true); nAttr.setStorable(true);
-	nAttr.setWritable(true); nAttr.setChannelBox(true);
-	nAttr.setConnectable(true);
-	addAttribute(aValueB);
-	aBlend = nAttr.create("blend", "blend", MFnNumericData::kFloat, (0.0), &status);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setKeyable(true); nAttr.setStorable(true);
-	nAttr.setWritable(true); nAttr.setChannelBox(true);
-	nAttr.setConnectable(true);
-	addAttribute(aBlend);
+	nAttr.setKeyable(true);
+	nAttr.setStorable(false);
+	addAttribute(avecB);
 
-	aResult = nAttr.createPoint("result", "r", &status);
+
+	ablend = nAttr.create("blend", "blend", MFnNumericData::kFloat, 0.0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setKeyable(false); nAttr.setStorable(false);
+	nAttr.setStorable(true);
+	nAttr.setKeyable(true);
+	nAttr.setMin(0);
+	nAttr.setMax(1);
+	addAttribute(ablend);
+
+
+	// output
+	aOutVec = nAttr.createPoint("outVector", "outVector", &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 	nAttr.setWritable(false);
-	addAttribute(aResult);
+	nAttr.setStorable(false);
+	nAttr.setReadable(true);
+	addAttribute(aOutVec);
 
-	attributeAffects(aValueA, aResult);
-	attributeAffects(aValueB, aResult);
-	attributeAffects(aBlend, aResult);
+	// connections
+	attributeAffects(avecA, aOutVec);
+	attributeAffects(avecB, aOutVec);
+	attributeAffects(ablend, aOutVec);
 
 	return MS::kSuccess;
 

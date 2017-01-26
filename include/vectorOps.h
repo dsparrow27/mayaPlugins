@@ -107,16 +107,17 @@ class VectorBlendPair :public MPxNode
 {
 public:
 	virtual void postConstructor();
-	virtual MStatus compute(const MPlug& plug, MDataBlock& dataBlock);
+	virtual MStatus compute(const MPlug& plug, MDataBlock& data);
 	static void* creator() { return new VectorBlendPair; };
 	virtual const int schedulingType() { return kParallel; };
 	static MStatus initialize();
 
 	static MString kName;
 	static MTypeId kId;
+	
+	static MObject avecA;
+	static MObject avecB;
+	static MObject ablend;
+	static MObject aOutVec;
 
-	static MObject aBlend;
-	static MObject aValueA;
-	static MObject aValueB;
-	static MObject aResult;
 };

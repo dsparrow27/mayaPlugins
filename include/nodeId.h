@@ -31,7 +31,7 @@ namespace mayaIds
 	const MTypeId ANGULARSINE_ID(0x00124519);
 	const MTypeId ANGULARCOSINE_ID(0x0012451A);
 	const MTypeId ANGULARTAN_ID(0x0012451B);
-	const MTypeId PARENTDUAL_ID(0x0012451C);
+	const MTypeId MATRIXBLEND_ID(0x0012451C);
 	//0x00124500 push deformer
 	//0x00124501 scalar sum
 	//0x00124502 scalar substract
@@ -60,7 +60,7 @@ namespace mayaIds
 	//0x00124519 AngularSine
 	//0x0012451A AngularCosine
 	//0x0012451B AngularTan
-	//0x0012451C parentdual
+	//0x0012451C MatrixBlend
 	//0x0012451D
 	//0x0012451E
 	//0x0012451F
