@@ -44,16 +44,21 @@ using namespace utils;
 	{
 		return (1 - blend) * goal + (blend* current);
 	}
+	double utils::lerp(double goal, double current, double blend)
+	{
+		return (1 - blend) * goal + (blend* current);
+	}
 	MVector utils::lerp(MVector goal, MVector current, float blend)
 	{
 		return (1 - blend) * goal + (blend* current);
 	}
+	
 	double utils::dot(MQuaternion qa, MQuaternion qb)
 	{
 		double dot = qa.w * qb.w + qa.x*qb.x + qa.y*qb.y + qa.z*qb.z;
 		return dot;
 	}
-	MQuaternion utils::slerp(MQuaternion qa, MQuaternion qb, double blend)
+	MQuaternion utils::slerp(MQuaternion qa, MQuaternion qb, float blend)
 	{
 		MQuaternion qc;
 		double dot = utils::dot(qa, qb);
@@ -67,7 +72,7 @@ using namespace utils;
 		}
 		double halfTheta = acos(dot);
 		double sinhalfTheta = sqrt(1.0 - dot* dot);
-		if (utils::almostEqual(fabsf(sinhalfTheta), 0.0f, 2))
+		if (utils::almostEqual(fabsf((float)sinhalfTheta), 0.0f, 2))
 		{
 			qc.w = (qa.w * 0.5 + qb.w * 0.5);
 			qc.x = (qa.x * 0.5 + qb.x * 0.5);
@@ -75,8 +80,8 @@ using namespace utils;
 			qc.z = (qa.z * 0.5 + qb.z * 0.5);
 			return qc;
 		}
-		double ratioA = sin((1.0 - blend) * halfTheta) / sinhalfTheta;
-		double ratioB = sin(blend * halfTheta) / sinhalfTheta;
+		double ratioA = sin((1.0 - (float)blend) * halfTheta) / sinhalfTheta;
+		double ratioB = sin((float)blend * halfTheta) / sinhalfTheta;
 		
 		qc.w = (qa.w * ratioA + qb.w * ratioB);
 		qc.x = (qa.x * ratioA + qb.x * ratioB);

@@ -7,6 +7,10 @@
 #include "maya/MDataHandle.h"
 #include "maya/MFnMatrixAttribute.h"
 #include "maya/MFnNumericAttribute.h"
+#include "maya/MFnEnumAttribute.h"
+#include "maya/MFnUnitAttribute.h"
+#include "maya/MFnCompoundAttribute.h"
+#include "maya/MEulerRotation.h"
 #include "maya/MPxNode.h"
 
 
@@ -22,7 +26,7 @@ public:
 	static MString kName;
 
 	static MObject aParentInverse;
-	static MObject blend;
+	static MObject aBlend;
 	static MObject aMatrixInA;
 	static MObject aMatrixInB;
 	static MObject aRotationOrder;

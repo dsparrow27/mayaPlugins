@@ -29,7 +29,8 @@ MStatus ParentSingle::compute(const MPlug& plug, MDataBlock& dataBlock)
 {
 	MStatus status = MS::kUnknownParameter;
 	
-	if (plug == aOutTranslate || plug == aOutRotate || plug.parent() == aOutRotate || plug == aOutScale || plug == aOutSrt || plug == aOutRotationOrder)
+	if (plug == aOutTranslate || plug.parent() == aOutTranslate || plug == aOutRotate || plug.parent() == aOutRotate
+		|| plug == aOutScale || plug.parent() == aOutScale || plug == aOutSrt || plug == aOutRotationOrder)
 	{
 		MMatrix inParentInverse = dataBlock.inputValue(aParentInverse).asMatrix();
 		MMatrix inOffsetMatrix = dataBlock.inputValue(aOffsetMatrix).asMatrix();
@@ -69,6 +70,7 @@ MStatus ParentSingle::compute(const MPlug& plug, MDataBlock& dataBlock)
 		MVector euler = transMat.eulerRotation().asVector();
 		dataBlock.outputValue(aOutRotate).set(euler);
 		dataBlock.outputValue(aOutRotate).setClean();
+		dataBlock.outputValue(aOutSrt).setClean();
 
 		status = MS::kSuccess;
 	}

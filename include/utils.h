@@ -14,6 +14,7 @@ namespace utils
 	bool almostEqual(float x, float y, int tailCount);
 	MVector lerp(MVector goal, MVector current, float blend);
 	float lerp(float goal, float current, float blend);
-	MQuaternion slerp(MQuaternion qa, MQuaternion qb, double blend);
+	double lerp(double goal, double current, double blend);
+	MQuaternion slerp(MQuaternion qa, MQuaternion qb, float blend);
 	double dot(MQuaternion qa, MQuaternion qb);
 };

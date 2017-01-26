@@ -9,6 +9,7 @@
 #include "vectorOps.h"
 #include "metaNode.h"
 #include "parentSingle.h"
+#include "parentDual.h"
 #include "aimNode.h"
 
 const char* kAUTHOR = "David Sparrow";
@@ -30,6 +31,7 @@ MTypeId PushDeformer::kId = mayaIds::PUSHDEFORMER_ID;
 MTypeId PointOnCurve::kId = mayaIds::POINTONCURVE_ID;
 MTypeId MetaNode::kId = mayaIds::METANODE_ID;
 MTypeId ParentSingle::kId = mayaIds::PARENTSINGLE_ID;
+MTypeId ParentDual::kId = mayaIds::PARENTDUAL_ID;
 MTypeId Gaussian::kId = mayaIds::GAUSSIAN_ID;
 MTypeId AimNode::kId = mayaIds::AIM_ID;
 MTypeId VectorSum::kId = mayaIds::VECTORSUM_ID;
@@ -59,6 +61,7 @@ MString PushDeformer::kName = "ds_pushDeformer";
 MString PointOnCurve::kName = "ds_pointOnCurve";
 MString MetaNode::kName = "ds_metaNode";
 MString ParentSingle::kName = "ds_parentSingle";
+MString ParentDual::kName = "ds_parentDual";
 MString Gaussian::kName = "ds_gaussian";
 MString AimNode::kName = "ds_aim";
 MString VectorSum::kName = "ds_vectorSum";
@@ -100,6 +103,7 @@ MStatus initializePlugin(MObject obj)
 	REGISTER_NODE(MetaNode, MPxNode::kDependNode);
 	REGISTER_NODE(BlendPair, MPxNode::kDependNode);
 	REGISTER_NODE(ParentSingle, MPxNode::kDependNode);
+	REGISTER_NODE(ParentDual, MPxNode::kDependNode);
 	REGISTER_NODE(Gaussian, MPxNode::kDependNode);
 	REGISTER_NODE(AimNode, MPxNode::kDependNode);
 	REGISTER_NODE(VectorSum, MPxNode::kDependNode);
@@ -135,6 +139,7 @@ MStatus uninitializePlugin(MObject obj)
 	DEREGISTER_NODE(MetaNode);
 	DEREGISTER_NODE(BlendPair);
 	DEREGISTER_NODE(ParentSingle);
+	DEREGISTER_NODE(ParentDual);
 	DEREGISTER_NODE(Gaussian);
 	DEREGISTER_NODE(AimNode);
 	DEREGISTER_NODE(VectorSum);
