@@ -5,11 +5,68 @@ MObject MatrixBlend::aMatrixInA;
 MObject MatrixBlend::aMatrixInB;
 MObject MatrixBlend::aBlend;
 MObject MatrixBlend::aRotationOrder;
-
 MObject MatrixBlend::aOutRotationOrder;
-
 MObject MatrixBlend::aOutMatrix;
+MObject MatrixToSrt::aInMatrix;
+MObject MatrixToSrt::aOutSrt;
+MObject MatrixToSrt::aOutRotate;
+MObject MatrixToSrt::aOutRotateX;
+MObject MatrixToSrt::aOutRotateY;
+MObject MatrixToSrt::aOutRotateZ;
+MObject MatrixToSrt::aOutTranslate;
+MObject MatrixToSrt::aOutScale;
 
+MObject SrtToMatrix::aOutMatrix;
+MObject SrtToMatrix::aInRotate;
+MObject SrtToMatrix::aInRotateX;
+MObject SrtToMatrix::aInRotateY;
+MObject SrtToMatrix::aInRotateZ;
+MObject SrtToMatrix::aInTranslate;
+MObject SrtToMatrix::aInScale;
+MObject MatrixConstant::aMatix;
+
+void MatrixToSrt::postConstructor()
+{
+	this->setExistWithoutInConnections(true);
+	this->setExistWithoutOutConnections(true);
+}
+
+MStatus MatrixToSrt::compute(const MPlug& plug, MDataBlock& datablock)
+{
+	return MS::kSuccess;
+}
+MStatus MatrixToSrt::initialize()
+{
+	return MS::kSuccess;
+};
+void SrtToMatrix::postConstructor()
+{
+	this->setExistWithoutInConnections(true);
+	this->setExistWithoutOutConnections(true);
+}
+
+MStatus SrtToMatrix::compute(const MPlug& plug, MDataBlock& datablock)
+{
+	return MS::kSuccess;
+}
+MStatus SrtToMatrix::initialize()
+{
+	return MS::kSuccess;
+}
+void MatrixConstant::postConstructor()
+{
+	this->setExistWithoutInConnections(true);
+	this->setExistWithoutOutConnections(true);
+}
+
+MStatus MatrixConstant::compute(const MPlug& plug, MDataBlock& datablock)
+{
+	return MS::kSuccess;
+}
+MStatus MatrixConstant::initialize()
+{
+	return MS::kSuccess;
+}
 
 
 void MatrixBlend::postConstructor()
