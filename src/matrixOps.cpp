@@ -23,7 +23,8 @@ MObject SrtToMatrix::aInRotateY;
 MObject SrtToMatrix::aInRotateZ;
 MObject SrtToMatrix::aInTranslate;
 MObject SrtToMatrix::aInScale;
-MObject MatrixConstant::aMatix;
+MObject MatrixConstant::aInMatrix;
+MObject MatrixConstant::aOutMatrix;
 
 void MatrixToSrt::postConstructor()
 {
@@ -39,6 +40,7 @@ MStatus MatrixToSrt::initialize()
 {
 	return MS::kSuccess;
 };
+
 void SrtToMatrix::postConstructor()
 {
 	this->setExistWithoutInConnections(true);
@@ -49,10 +51,12 @@ MStatus SrtToMatrix::compute(const MPlug& plug, MDataBlock& datablock)
 {
 	return MS::kSuccess;
 }
+
 MStatus SrtToMatrix::initialize()
 {
 	return MS::kSuccess;
 }
+
 void MatrixConstant::postConstructor()
 {
 	this->setExistWithoutInConnections(true);
@@ -61,10 +65,36 @@ void MatrixConstant::postConstructor()
 
 MStatus MatrixConstant::compute(const MPlug& plug, MDataBlock& datablock)
 {
-	return MS::kSuccess;
+	MStatus status = MS::kUnknownParameter;
+	if (plug == aOutMatrix)
+	{
+		MMatrix iMat = datablock.inputValue(aInMatrix).asMatrix();
+		MDataHandle outMat = datablock.outputValue(aOutMatrix);
+		outMat.setMMatrix(iMat);
+		outMat.setClean();
+		status = MS::kSuccess;
+	}
+	return status;
 }
+
 MStatus MatrixConstant::initialize()
 {
+	MStatus status;
+	MFnMatrixAttribute mAttr;
+	aInMatrix = mAttr.create("matrix", "matrix", MFnMatrixAttribute::kDouble, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	mAttr.setKeyable(true); mAttr.setWritable(true); mAttr.setStorable(false);
+	mAttr.setConnectable(true);
+	addAttribute(aInMatrix);
+
+	aOutMatrix = mAttr.create("outMatrix", "outMatrix", MFnMatrixAttribute::kDouble, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	mAttr.setKeyable(false); mAttr.setWritable(false); mAttr.setStorable(false);
+	mAttr.setReadable(true);
+	addAttribute(aOutMatrix);
+
+	attributeAffects(aInMatrix, aOutMatrix);
+
 	return MS::kSuccess;
 }
 
