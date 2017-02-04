@@ -152,6 +152,7 @@ MStatus uninitializePlugin(MObject obj)
 	DEREGISTER_NODE(AngularCosine);
 	DEREGISTER_NODE(AngularTan);
 	DEREGISTER_NODE(MatrixBlend);
+	
 	return MS::kSuccess;
 
 }

@@ -52,13 +52,14 @@ public:
 
 	static MObject aOutMatrix;
 
-	static MObject aInRotate;
-	static MObject aInRotateX;
-	static MObject aInRotateY;
-	static MObject aInRotateZ;
+	static MObject aInSrt;
+		static MObject aInRotate;
+		static MObject aInRotateX;
+		static MObject aInRotateY;
+		static MObject aInRotateZ;
 
-	static MObject aInTranslate;
-	static MObject aInScale;
+		static MObject aInTranslate;
+		static MObject aInScale;
 
 };
 class MatrixConstant :public MPxNode
@@ -72,7 +73,8 @@ public:
 	static MTypeId kId;
 	static MString kName;
 
-	static MObject aMatix;
+	static MObject aInMatrix;
+	static MObject aOutMatrix;
 
 };
 

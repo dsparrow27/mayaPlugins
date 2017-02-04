@@ -7,22 +7,25 @@ MObject MatrixBlend::aBlend;
 MObject MatrixBlend::aRotationOrder;
 MObject MatrixBlend::aOutRotationOrder;
 MObject MatrixBlend::aOutMatrix;
+
 MObject MatrixToSrt::aInMatrix;
 MObject MatrixToSrt::aOutSrt;
-MObject MatrixToSrt::aOutRotate;
-MObject MatrixToSrt::aOutRotateX;
-MObject MatrixToSrt::aOutRotateY;
-MObject MatrixToSrt::aOutRotateZ;
-MObject MatrixToSrt::aOutTranslate;
-MObject MatrixToSrt::aOutScale;
+	MObject MatrixToSrt::aOutRotate;
+	MObject MatrixToSrt::aOutRotateX;
+	MObject MatrixToSrt::aOutRotateY;
+	MObject MatrixToSrt::aOutRotateZ;
+	MObject MatrixToSrt::aOutTranslate;
+	MObject MatrixToSrt::aOutScale;
 
 MObject SrtToMatrix::aOutMatrix;
-MObject SrtToMatrix::aInRotate;
-MObject SrtToMatrix::aInRotateX;
-MObject SrtToMatrix::aInRotateY;
-MObject SrtToMatrix::aInRotateZ;
-MObject SrtToMatrix::aInTranslate;
-MObject SrtToMatrix::aInScale;
+MObject SrtToMatrix::aInSrt;
+	MObject SrtToMatrix::aInRotate;
+	MObject SrtToMatrix::aInRotateX;
+	MObject SrtToMatrix::aInRotateY;
+	MObject SrtToMatrix::aInRotateZ;
+	MObject SrtToMatrix::aInTranslate;
+	MObject SrtToMatrix::aInScale;
+
 MObject MatrixConstant::aInMatrix;
 MObject MatrixConstant::aOutMatrix;
 
@@ -49,11 +52,73 @@ void SrtToMatrix::postConstructor()
 
 MStatus SrtToMatrix::compute(const MPlug& plug, MDataBlock& datablock)
 {
-	return MS::kSuccess;
+	MStatus status = MS::kUnknownParameter;
+
+	return status;
 }
 
 MStatus SrtToMatrix::initialize()
 {
+	MStatus status;
+	MFnMatrixAttribute mAttr;
+	MFnCompoundAttribute cAttr;
+	MFnNumericAttribute nAttr;
+	MFnUnitAttribute uAttr;
+	aOutMatrix = mAttr.create("outMatrix", "outMatrix", MFnMatrixAttribute::kDouble, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	mAttr.setKeyable(false); mAttr.setWritable(false); mAttr.setStorable(false);
+	mAttr.setReadable(true);
+	addAttribute(aOutMatrix);
+
+	aInSrt = cAttr.create("outSrt", "outSrt", &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	cAttr.setChannelBox(false);
+
+	aInTranslate = nAttr.createPoint("translate", "translate", &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	nAttr.setKeyable(true); nAttr.setStorable(true); nAttr.setWritable(true);
+	nAttr.setConnectable(true);
+
+	aInRotateX = uAttr.create("rotateX", "rotateX", MFnUnitAttribute::kAngle, 0, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	uAttr.setKeyable(true); uAttr.setStorable(true); uAttr.setWritable(true);
+	uAttr.setConnectable(true);
+	addAttribute(aInRotateX);
+
+	aInRotateY = uAttr.create("rotateY", "rotateY", MFnUnitAttribute::kAngle, 0, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	uAttr.setStorable(false); uAttr.setKeyable(false); uAttr.setWritable(false);
+	addAttribute(aInRotateZ);
+
+	aInRotateZ = uAttr.create("rotateZ", "rotateZ", MFnUnitAttribute::kAngle, 0, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	uAttr.setStorable(false); uAttr.setKeyable(false); uAttr.setWritable(false);
+	addAttribute(aInRotateZ);
+
+	aInRotate = nAttr.create("rotate", "rotate", aInRotateX, aInRotateY, aInRotateZ, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	nAttr.setKeyable(true); nAttr.setStorable(true); nAttr.setWritable(true);
+	nAttr.setConnectable(true);
+
+	aInScale = nAttr.createPoint("scale", "scale", &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	nAttr.setKeyable(true); nAttr.setStorable(true); nAttr.setWritable(true);
+	nAttr.setConnectable(true);
+
+	cAttr.addChild(aInTranslate);
+	cAttr.addChild(aInRotate);
+	cAttr.addChild(aInScale);
+	addAttribute(aInSrt);
+
+	attributeAffects(aOutMatrix, aOutMatrix);
+	attributeAffects(aInSrt, aOutMatrix);
+	attributeAffects(aInRotate, aOutMatrix);
+	attributeAffects(aInRotateX, aOutMatrix);
+	attributeAffects(aInRotateY, aOutMatrix);
+	attributeAffects(aInRotateZ, aOutMatrix);
+	attributeAffects(aInTranslate, aOutMatrix);
+	attributeAffects(aInScale, aOutMatrix);
+
 	return MS::kSuccess;
 }
 
