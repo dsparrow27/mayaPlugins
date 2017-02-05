@@ -37,16 +37,18 @@ public:
 
 	// outputs
 	static MObject aOutRotationOrder;
+	static MObject aOutMatrix;
 	//compound to house all other outputs
 	static MObject aOutSrt;
 	
-	static MObject aOutRotate;
-	static MObject aOutRotateX;
-	static MObject aOutRotateY;
-	static MObject aOutRotateZ;
-
-	static MObject aOutTranslate;
-
-	static MObject aOutScale;
+		static MObject aOutRotate;
+			static MObject aOutRotateX;
+			static MObject aOutRotateY;
+			static MObject aOutRotateZ;
+		static MObject aOutTranslate;
+			static MObject aOutTranslateX;
+			static MObject aOutTranslateY;
+			static MObject aOutTranslateZ;
+		static MObject aOutScale;
 
 };

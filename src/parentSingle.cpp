@@ -8,16 +8,20 @@ MObject ParentSingle::aNegateX;
 MObject ParentSingle::aNegateY;
 MObject ParentSingle::aNegateZ;
 
+MObject ParentSingle::aOutMatrix;
+
 MObject ParentSingle::aOutSrt;
-MObject ParentSingle::aOutRotationOrder;
-MObject ParentSingle::aOutRotate;
-MObject ParentSingle::aOutRotateX;
-MObject ParentSingle::aOutRotateY;
-MObject ParentSingle::aOutRotateZ;
+	MObject ParentSingle::aOutRotationOrder;
+	MObject ParentSingle::aOutRotate;
+		MObject ParentSingle::aOutRotateX;
+		MObject ParentSingle::aOutRotateY;
+		MObject ParentSingle::aOutRotateZ;
 
-MObject ParentSingle::aOutTranslate;
-
-MObject ParentSingle::aOutScale;
+	MObject ParentSingle::aOutTranslate;
+		MObject ParentSingle::aOutTranslateX;
+		MObject ParentSingle::aOutTranslateY;
+		MObject ParentSingle::aOutTranslateZ;
+	MObject ParentSingle::aOutScale;
 
 
 void ParentSingle::postConstructor()
@@ -30,7 +34,7 @@ MStatus ParentSingle::compute(const MPlug& plug, MDataBlock& dataBlock)
 	MStatus status = MS::kUnknownParameter;
 	
 	if (plug == aOutTranslate || plug.parent() == aOutTranslate || plug == aOutRotate || plug.parent() == aOutRotate
-		|| plug == aOutScale || plug.parent() == aOutScale || plug == aOutSrt || plug == aOutRotationOrder)
+		|| plug == aOutScale || plug.parent() == aOutScale || plug == aOutSrt || plug == aOutRotationOrder || plug == aOutMatrix)
 	{
 		MMatrix inParentInverse = dataBlock.inputValue(aParentInverse).asMatrix();
 		MMatrix inOffsetMatrix = dataBlock.inputValue(aOffsetMatrix).asMatrix();
@@ -42,10 +46,10 @@ MStatus ParentSingle::compute(const MPlug& plug, MDataBlock& dataBlock)
 
 		MMatrix totalMatrix = inOffsetMatrix * inWorldMatrix * inParentInverse;
 		MTransformationMatrix transMat(totalMatrix);
-		MVector outTranslate = transMat.translation(MSpace::kWorld);
-		dataBlock.outputValue(aOutTranslate).set(outTranslate);
-		dataBlock.outputValue(aOutTranslate).setClean();
-
+		MDataHandle HoutTranslate = dataBlock.outputValue(aOutTranslate);
+		HoutTranslate.set(totalMatrix[3][0], totalMatrix[3][1], totalMatrix[3][2]);
+		HoutTranslate.setClean();
+		
 		double outScale[3];
 		transMat.getScale(outScale, MSpace::kWorld);
 		if (negX == true)
@@ -60,18 +64,23 @@ MStatus ParentSingle::compute(const MPlug& plug, MDataBlock& dataBlock)
 		{
 			outScale[2] *= -1;
 		}
-
-		dataBlock.outputValue(aOutScale).set((float)outScale[0], (float)outScale[1], (float)outScale[2]);
-		dataBlock.outputValue(aOutScale).setClean();
-		dataBlock.outputValue(aOutRotationOrder).set(rotOrder);
-		dataBlock.outputValue(aOutRotationOrder).setClean();
+		MDataHandle outScaleH = dataBlock.outputValue(aOutScale);
+		MDataHandle outaOutRotationOrderH = dataBlock.outputValue(aOutRotationOrder);
+		outScaleH.set((float)outScale[0], (float)outScale[1], (float)outScale[2]);
+		outScaleH.setClean();
+		outaOutRotationOrderH.set(rotOrder);
+		outaOutRotationOrderH.setClean();
 
 		transMat.reorderRotation(utils::rotationOrderByIndex(rotOrder));
 		MVector euler = transMat.eulerRotation().asVector();
-		dataBlock.outputValue(aOutRotate).set(euler);
-		dataBlock.outputValue(aOutRotate).setClean();
+		MDataHandle aOutRotateH = dataBlock.outputValue(aOutRotate);
+		aOutRotateH.set(euler);
+		aOutRotateH.setClean();
 		dataBlock.outputValue(aOutSrt).setClean();
-
+		MDataHandle hOutMatrix = dataBlock.outputValue(aOutMatrix);
+		hOutMatrix.setMMatrix(transMat.asMatrix());
+		hOutMatrix.setClean();
+		
 		status = MS::kSuccess;
 	}
 	
@@ -104,6 +113,11 @@ MStatus ParentSingle::initialize()
 	mAttr.setKeyable(true); mAttr.setWritable(true); mAttr.setStorable(true);
 	mAttr.setConnectable(true);
 	addAttribute(aWorldMatrix);
+	aOutMatrix = mAttr.create("outMatrix", "outMatrix", MFnMatrixAttribute::kDouble, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	nAttr.setStorable(false); nAttr.setKeyable(false); nAttr.setWritable(false);
+	cAttr.setChannelBox(false);
+	addAttribute(aOutMatrix);
 
 	aRotationOrder = eAttr.create("rotationOrder", "ro", 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -141,34 +155,61 @@ MStatus ParentSingle::initialize()
 
 	aOutSrt = cAttr.create("outSrt", "osrt", &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	cAttr.setChannelBox(false);
+	cAttr.setChannelBox(false); nAttr.setKeyable(false); nAttr.setStorable(false);
+	nAttr.setWritable(false);
 	
-	aOutTranslate = nAttr.createPoint("outTranslate", "ot", &status);
+	
+	aOutTranslateX = nAttr.create("outTranslateX", "outTranslateX", MFnNumericData::kDouble, 0, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	nAttr.setStorable(false); nAttr.setKeyable(false); nAttr.setWritable(false);
+	cAttr.setChannelBox(false);
+	addAttribute(aOutTranslateX);
+
+	aOutTranslateY= nAttr.create("outTranslateY", "outTranslateY", MFnNumericData::kDouble, 0, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	nAttr.setStorable(false); nAttr.setKeyable(false); nAttr.setWritable(false);
+	cAttr.setChannelBox(false);
+	addAttribute(aOutTranslateY);
+
+	aOutTranslateZ = nAttr.create("outTranslateZ", "outTranslateZ", MFnNumericData::kDouble, 0, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	nAttr.setStorable(false); nAttr.setKeyable(false); nAttr.setWritable(false);
+	cAttr.setChannelBox(false);
+	addAttribute(aOutTranslateZ);
+
+	aOutTranslate = nAttr.create("outTranslate", "outTranslate", aOutTranslateX, aOutTranslateY, aOutTranslateZ, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	nAttr.setKeyable(false); nAttr.setStorable(false); nAttr.setWritable(false);
-	
+	cAttr.setChannelBox(false);
+
+
 	aOutRotateX = uAttr.create("outRotateX", "orx", MFnUnitAttribute::kAngle, 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	uAttr.setStorable(false); uAttr.setKeyable(false); uAttr.setWritable(false);
+	cAttr.setChannelBox(false);
 	addAttribute(aOutRotateX);
 
 	aOutRotateY = uAttr.create("outRotateY", "ory", MFnUnitAttribute::kAngle, 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	uAttr.setStorable(false); uAttr.setKeyable(false); uAttr.setWritable(false);
+	cAttr.setChannelBox(false);
 	addAttribute(aOutRotateY);
 
 	aOutRotateZ = uAttr.create("outRotateZ", "orz", MFnUnitAttribute::kAngle, 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	uAttr.setStorable(false); uAttr.setKeyable(false); uAttr.setWritable(false);
+	cAttr.setChannelBox(false);
 	addAttribute(aOutRotateZ);
 
 	aOutRotate = nAttr.create("outRotate", "or", aOutRotateX, aOutRotateY, aOutRotateZ, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	nAttr.setKeyable(false); nAttr.setStorable(false); nAttr.setWritable(false);
+	cAttr.setChannelBox(false);
 
 	aOutScale = nAttr.createPoint("outScale", "os", &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	nAttr.setKeyable(false); nAttr.setStorable(false); nAttr.setWritable(false);
+	cAttr.setChannelBox(false);
 	
 	cAttr.addChild(aOutTranslate);
 	cAttr.addChild(aOutRotate);
@@ -215,6 +256,13 @@ MStatus ParentSingle::initialize()
 	attributeAffects(aNegateY, aOutSrt);
 	attributeAffects(aNegateZ, aOutSrt);
 
+	attributeAffects(aParentInverse, aOutMatrix);
+	attributeAffects(aWorldMatrix, aOutMatrix);
+	attributeAffects(aOffsetMatrix, aOutMatrix);
+	attributeAffects(aRotationOrder, aOutMatrix);
+	attributeAffects(aNegateX, aOutMatrix);
+	attributeAffects(aNegateY, aOutMatrix);
+	attributeAffects(aNegateZ, aOutMatrix);
 	
 
 	return MS::kSuccess;
