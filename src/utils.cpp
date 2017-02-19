@@ -84,4 +84,25 @@ using namespace utils;
 		qc.y = (qa.y * ratioA + qb.y * ratioB);
 		qc.z = (qa.z * ratioA + qb.z * ratioB);
 		return qc;
+
+	}
+	MQuaternion utils::aimVector(MVector sourcePosition, MVector targetPosition, MVector aimVector, MVector upVector)
+	{
+		MVector aimDirection = targetPosition - sourcePosition;
+		MVector eyeU = aimDirection.normal();
+		MVector eyeW = eyeU ^ upVector;
+		MVector eyeV = eyeW ^ eyeU;
+		MQuaternion quatU = MQuaternion(aimVector, eyeU);
+
+		MVector upRotated = upVector.rotateBy(quatU);
+		double angle = acos(upRotated * eyeV);
+		MQuaternion quatV = MQuaternion(angle, eyeU);
+		if (!eyeV.isEquivalent(upRotated.rotateBy(quatV), 1.0e-5))
+		{
+			angle = (2 * M_PI) - angle;
+			quatV = MQuaternion(angle, eyeU);
+		}
+		quatU *= quatV;
+
+		return quatU;
 	}

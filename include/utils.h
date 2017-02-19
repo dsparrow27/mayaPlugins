@@ -16,4 +16,5 @@ namespace utils
 	float lerp(float goal, float current, float blend);
 	MQuaternion slerp(MQuaternion qa, MQuaternion qb, float blend);
 	double dot(MQuaternion qa, MQuaternion qb);
+	MQuaternion aimVector(MVector sourcePosition, MVector targetPosition, MVector aimVector, MVector upVector);
 };

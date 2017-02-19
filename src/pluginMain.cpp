@@ -45,6 +45,7 @@ MTypeId AngularSine::kId = mayaIds::ANGULARSINE_ID;
 MTypeId AngularCosine::kId = mayaIds::ANGULARCOSINE_ID;
 MTypeId AngularTan::kId = mayaIds::ANGULARTAN_ID;
 MTypeId MatrixBlend::kId = mayaIds::MATRIXBLEND_ID;
+MTypeId MatrixConstant::kId = mayaIds::MATRIXCONSTANT_ID;
 
 MString Substract::kName = "ds_substract";
 MString Sum::kName = "ds_sum";
@@ -75,6 +76,8 @@ MString AngularSine::kName = "ds_angularSine";
 MString AngularCosine::kName = "ds_angularCosine";
 MString AngularTan::kName = "ds_angularTan";
 MString MatrixBlend::kName = "ds_MatrixBlend";
+MString MatrixConstant::kName = "ds_MatrixConstant";
+
 
 #define REGISTER_NODE(NODE, TYPE)	\
     status = fnPlugin.registerNode(NODE::kName,NODE::kId,NODE::creator, NODE::initialize, TYPE);	\
@@ -117,6 +120,7 @@ MStatus initializePlugin(MObject obj)
 	REGISTER_NODE(AngularCosine, MPxNode::kDependNode);
 	REGISTER_NODE(AngularTan, MPxNode::kDependNode);
 	REGISTER_NODE(MatrixBlend, MPxNode::kDependNode);
+	REGISTER_NODE(MatrixConstant, MPxNode::kDependNode);
 	return MS::kSuccess;
 }
 
@@ -152,6 +156,7 @@ MStatus uninitializePlugin(MObject obj)
 	DEREGISTER_NODE(AngularCosine);
 	DEREGISTER_NODE(AngularTan);
 	DEREGISTER_NODE(MatrixBlend);
+	DEREGISTER_NODE(MatrixConstant);
 	
 	return MS::kSuccess;
 
