@@ -7,13 +7,13 @@
 #include "scalarOps.h"
 #include "angularOps.h"
 #include "vectorOps.h"
-#include "metaNode.h"
+#include "dummies.h"
 #include "parentSingle.h"
 #include "matrixOps.h"
 #include "aimNode.h"
 
 const char* kAUTHOR = "David Sparrow";
-const char* kVERSION = "1.0.0";
+const char* kVERSION = "1.1.0";
 const char* kREQUIRED_API_VERSION = "Any";
 
 MTypeId Sum::kId = mayaIds::SUM_ID;
@@ -46,6 +46,21 @@ MTypeId AngularCosine::kId = mayaIds::ANGULARCOSINE_ID;
 MTypeId AngularTan::kId = mayaIds::ANGULARTAN_ID;
 MTypeId MatrixBlend::kId = mayaIds::MATRIXBLEND_ID;
 MTypeId MatrixConstant::kId = mayaIds::MATRIXCONSTANT_ID;
+MTypeId MetaNode::kId = mayaIds::METANODE_ID;
+MTypeId MetaSubSystem::kId = mayaIds::METARIGSYSTEMCONSTANT_ID;
+MTypeId MetaSupportSystem::kId = mayaIds::METASUPPORTSYSTEMCONSTANT_ID;
+MTypeId MetaRigSystem::kId = mayaIds::METARIGSYSTEMCONSTANT_ID;
+MTypeId MetaFaceSystem::kId = mayaIds::METAFACESYSTEMCONSTANT_ID;
+MTypeId RootNode::kId = mayaIds::ROOTNODECONSTANT_ID;
+MTypeId ComponentLayer::kId = mayaIds::COMPONENTLAYERCONSTANT_ID;
+MTypeId RigLayer::kId = mayaIds::RIGLAYERCONSTANT_ID;
+MTypeId DeformLayer::kId = mayaIds::DEFORMLAYERCONSTANT_ID;
+MTypeId GuideLayer::kId = mayaIds::GUIDELAYERCONSTANT_ID;
+MTypeId InputLayer::kId = mayaIds::INPUTLAYERCONSTANT_ID;
+MTypeId OutputLayer::kId = mayaIds::OUTPUTLAYERCONSTANT_ID;
+MTypeId XGroupLayer::kId = mayaIds::XGROUPLAYERCONSTANT_ID;
+MTypeId SettingsNode::kId = mayaIds::SETTINGSNODECONSTANT_ID;
+MTypeId ControlPanel::kId = mayaIds::CONTROLPANELCONSTANT_ID;
 
 MString Substract::kName = "ds_substract";
 MString Sum::kName = "ds_sum";
@@ -77,6 +92,21 @@ MString AngularCosine::kName = "ds_angularCosine";
 MString AngularTan::kName = "ds_angularTan";
 MString MatrixBlend::kName = "ds_MatrixBlend";
 MString MatrixConstant::kName = "ds_MatrixConstant";
+MString MetaNode::kName = "ds_metaNode";
+MString MetaSubSystem::kName = "ds_metaSubSystem";
+MString MetaSupportSystem::kName = "ds_metaSupportSystem";
+MString MetaRigSystem::kName = "ds_metaRigSystem";
+MString MetaFaceSystem::kName = "ds_metaFaceSystem";
+MString RootNode::kName = "ds_rootNode";
+MString ComponentLayer::kName = "ds_componentLayer";
+MString RigLayer::kName = "ds_rigLayer";
+MString DeformLayer::kName = "ds_deformLayer";
+MString GuideLayer::kName = "ds_guideLayer";
+MString InputLayer::kName = "ds_inputLayer";
+MString OutputLayer::kName = "ds_outputLayer";
+MString XGroupLayer::kName = "ds_xGroupLayer";
+MString SettingsNode::kName = "ds_settingsNode";
+MString ControlPanel::kName = "ds_controlPanel";
 
 
 #define REGISTER_NODE(NODE, TYPE)	\
@@ -85,7 +115,12 @@ MString MatrixConstant::kName = "ds_MatrixConstant";
 
 #define DEREGISTER_NODE(NODE)	\
     status = fnPlugin.deregisterNode(NODE::kId);	\
-    CHECK_MSTATUS_AND_RETURN_IT(status);    \
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+#define REGISTER_TRANSFORM(NODE, TYPE)	\
+	status = fnPlugin.registerTransform(NODE::kName, NODE::kId, NODE::creator, NODE::initialize, NODE::creator, NODE::kId); 	\
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
 
 MStatus initializePlugin(MObject obj)
 {
@@ -121,6 +156,22 @@ MStatus initializePlugin(MObject obj)
 	REGISTER_NODE(AngularTan, MPxNode::kDependNode);
 	REGISTER_NODE(MatrixBlend, MPxNode::kDependNode);
 	REGISTER_NODE(MatrixConstant, MPxNode::kDependNode);
+	REGISTER_NODE(MetaSubSystem, MPxNode::kDependNode);
+	REGISTER_NODE(MetaSupportSystem, MPxNode::kDependNode);
+	REGISTER_NODE(MetaRigSystem, MPxNode::kDependNode);
+	REGISTER_NODE(MetaFaceSystem, MPxNode::kDependNode);
+	REGISTER_NODE(RootNode, MPxNode::kDependNode);
+	REGISTER_NODE(SettingsNode, MPxNode::kDependNode);
+	REGISTER_NODE(ControlPanel, MPxNode::kDependNode);
+	REGISTER_TRANSFORM(ComponentLayer);
+	REGISTER_TRANSFORM(RigLayer);
+	REGISTER_TRANSFORM(DeformLayer);
+	REGISTER_TRANSFORM(GuideLayer);
+	REGISTER_TRANSFORM(InputLayer);
+	REGISTER_TRANSFORM(OutputLayer);
+	REGISTER_TRANSFORM(XGroupLayer);
+
+
 	return MS::kSuccess;
 }
 
@@ -157,7 +208,21 @@ MStatus uninitializePlugin(MObject obj)
 	DEREGISTER_NODE(AngularTan);
 	DEREGISTER_NODE(MatrixBlend);
 	DEREGISTER_NODE(MatrixConstant);
-	
+	DEREGISTER_NODE(MetaSubSystem, MPxNode::kDependNode);
+	DEREGISTER_NODE(MetaSupportSystem, MPxNode::kDependNode);
+	DEREGISTER_NODE(MetaRigSystem, MPxNode::kDependNode);
+	DEREGISTER_NODE(MetaFaceSystem, MPxNode::kDependNode);
+	DEREGISTER_NODE(RootNode, MPxNode::kDependNode);
+	DEREGISTER_NODE(SettingsNode, MPxNode::kDependNode);
+	DEREGISTER_NODE(ControlPanel, MPxNode::kDependNode);
+	DEREGISTER_NODE(ComponentLayer);
+	DEREGISTER_NODE(RigLayer);
+	DEREGISTER_NODE(DeformLayer);
+	DEREGISTER_NODE(GuideLayer);
+	DEREGISTER_NODE(InputLayer);
+	DEREGISTER_NODE(OutputLayer);
+	DEREGISTER_NODE(XGroupLayer);
+
 	return MS::kSuccess;
 
 }
