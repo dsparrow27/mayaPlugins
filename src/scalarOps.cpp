@@ -39,6 +39,8 @@ MObject Remap::aOldMin;
 MObject Remap::aOldMax;
 MObject Remap::aNewMin;
 MObject Remap::aNewMax;
+MObject Negate::aOperands;
+MObject Negate::aResult;
 
 
 
@@ -378,7 +380,6 @@ MStatus Clamp::initialize()
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	nAttr.setKeyable(false); nAttr.setStorable(false);
 	nAttr.setWritable(false); nAttr.setArray(true);
-	nAttr.setUsesArrayDataBuilder(true);
 	nAttr.setUsesArrayDataBuilder(true);
 	addAttribute(aResult);
 
@@ -805,3 +806,62 @@ MStatus Remap::initialize()
 	
 	return status;
 }
+
+void Negate::postConstructor()
+{
+	this->setExistWithoutInConnections(true);
+	this->setExistWithoutOutConnections(true);
+}
+
+MStatus Negate::compute(const MPlug& plug, MDataBlock& dataBlock)
+{
+	MStatus status = MS::kUnknownParameter;
+	if (plug == aResult)
+	{
+		MArrayDataHandle inOperands = dataBlock.inputArrayValue(aOperands);
+		MArrayDataHandle inResult = dataBlock.outputValue(aResult, &status);
+		unsigned int inCount = inOperands.elementCount();
+		MArrayDataBuilder resultBuilder = inResult.builder();
+
+		for (unsigned int i = 0; i < inResult.elementCount(); i++)
+		{
+			resultBuilder.removeElement(i);
+		}
+		resultBuilder.growArray(inCount);
+		for (unsigned int i = 0; i < inCount; i++)
+		{
+			MDataHandle currentDataHandle = resultBuilder.addElement(i);
+			inOperands.jumpToArrayElement(i);
+			currentDataHandle.setDouble(-inOperands.inputValue().asDouble());
+
+		}
+		inResult.set(resultBuilder);
+		inResult.setAllClean();
+		status = MS::kSuccess;
+	}
+
+}
+MStatus Negate::initialize()
+{
+	MStatus status;
+	MFnNumericAttribute nAttr;
+
+	aOperands = nAttr.create("operands", "ops", MFnNumericData::kDouble, 0.0, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	nAttr.setKeyable(true); nAttr.setStorable(true);
+	nAttr.setWritable(true); nAttr.setArray(true);
+	nAttr.setChannelBox(true); nAttr.setConnectable(true);
+	addAttribute(aOperands);
+
+	aResult = nAttr.create("result", "result", MFnNumericData::kDouble, 0.0, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+	nAttr.setKeyable(false); nAttr.setStorable(false);
+	nAttr.setWritable(false); nAttr.setArray(true);
+	nAttr.setUsesArrayDataBuilder(true);
+	addAttribute(aResult);
+
+	attributeAffects(aOperands, aResult);
+
+	return status;
+}
+

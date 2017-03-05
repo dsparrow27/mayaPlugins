@@ -61,6 +61,7 @@ MTypeId OutputLayer::kId = mayaIds::OUTPUTLAYERCONSTANT_ID;
 MTypeId XGroupLayer::kId = mayaIds::XGROUPLAYERCONSTANT_ID;
 MTypeId SettingsNode::kId = mayaIds::SETTINGSNODECONSTANT_ID;
 MTypeId ControlPanel::kId = mayaIds::CONTROLPANELCONSTANT_ID;
+MTypeId Negate::kId = mayaIds::NEGATE_ID;
 
 MString Substract::kName = "ds_substract";
 MString Sum::kName = "ds_sum";
@@ -107,6 +108,7 @@ MString OutputLayer::kName = "ds_outputLayer";
 MString XGroupLayer::kName = "ds_xGroupLayer";
 MString SettingsNode::kName = "ds_settingsNode";
 MString ControlPanel::kName = "ds_controlPanel";
+MString Negate::kName = "ds_negate";
 
 
 #define REGISTER_NODE(NODE, TYPE)	\
@@ -170,6 +172,7 @@ MStatus initializePlugin(MObject obj)
 	REGISTER_TRANSFORM(InputLayer);
 	REGISTER_TRANSFORM(OutputLayer);
 	REGISTER_TRANSFORM(XGroupLayer);
+	REGISTER_NODE(Negate, MPxNode::kDependNode);
 
 
 	return MS::kSuccess;
@@ -222,6 +225,7 @@ MStatus uninitializePlugin(MObject obj)
 	DEREGISTER_NODE(InputLayer);
 	DEREGISTER_NODE(OutputLayer);
 	DEREGISTER_NODE(XGroupLayer);
+	DEREGISTER_NODE(Negate);
 
 	return MS::kSuccess;
 

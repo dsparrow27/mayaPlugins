@@ -235,6 +235,23 @@ public:
 
 //sign
 //negate
+class Negate : public MPxNode
+{
+public:
+	virtual void postConstructor();
+	virtual MStatus compute(const MPlug& plug, MDataBlock& dataBlock);
+	static void* creator() { return new Negate; };
+	virtual const int schedulingType() { return kParallel; };
+	static MStatus initialize();
+
+	static MString kName;
+	static MTypeId kId;
+
+	static MObject aOperands;
+	static MObject aResult;
+
+};
+
 //reciprocal
 //log
 //squareroot

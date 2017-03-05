@@ -47,6 +47,7 @@ namespace mayaIds
 	const MTypeId XGROUPLAYERCONSTANT_ID(0x0012452B);
 	const MTypeId SETTINGSNODECONSTANT_ID(0x0012452C);
 	const MTypeId CONTROLPANELCONSTANT_ID(0x0012452D);
+	const MTypeId NEGATE_ID(0x0012452E);
 
 	//0x00124500 push deformer
 	//0x00124501 scalar sum
@@ -94,7 +95,7 @@ namespace mayaIds
 	//0x0012452B XGroupLayer
 	//0x0012452C SettingsNode
 	//0x0012452D ControlPanel
-	//0x0012452E
+	//0x0012452E negate
 	//0x0012452F
 	//0x00124530
 	//0x00124531
