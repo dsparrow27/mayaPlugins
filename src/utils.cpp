@@ -42,7 +42,7 @@ using namespace utils;
 	}
 	float utils::lerp(float goal, float current, float blend)
 	{
-		return (1 - blend) * goal + (blend* current);
+		return (goal * blend) + ((1.0 - blend) * current);
 	}
 
 	MVector utils::lerp(MVector goal, MVector current, float blend)
