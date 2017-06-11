@@ -66,45 +66,39 @@ MStatus SrtToMatrix::initialize()
 	MFnUnitAttribute uAttr;
 	aOutMatrix = mAttr.create("outMatrix", "outMatrix", MFnMatrixAttribute::kDouble, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	mAttr.setKeyable(false); mAttr.setWritable(false); mAttr.setStorable(false);
-	mAttr.setReadable(true);
+	AS_OUTPUT(mAttr);
 	addAttribute(aOutMatrix);
 
 	aInSrt = cAttr.create("outSrt", "outSrt", &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	cAttr.setChannelBox(false);
+	AS_OUTPUT(cAttr);
 
 	aInTranslate = nAttr.createPoint("translate", "translate", &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setKeyable(true); nAttr.setStorable(true); nAttr.setWritable(true);
-	nAttr.setConnectable(true);
-
+	AS_INPUT(nAttr);
 	aInRotateX = uAttr.create("rotateX", "rotateX", MFnUnitAttribute::kAngle, 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	uAttr.setKeyable(true); uAttr.setStorable(true); uAttr.setWritable(true);
-	uAttr.setConnectable(true);
+	AS_INPUT(uAttr);
 	addAttribute(aInRotateX);
 
 	aInRotateY = uAttr.create("rotateY", "rotateY", MFnUnitAttribute::kAngle, 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	uAttr.setStorable(false); uAttr.setKeyable(false); uAttr.setWritable(false);
+	AS_INPUT(uAttr);
 	addAttribute(aInRotateZ);
 
 	aInRotateZ = uAttr.create("rotateZ", "rotateZ", MFnUnitAttribute::kAngle, 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	uAttr.setStorable(false); uAttr.setKeyable(false); uAttr.setWritable(false);
+	AS_INPUT(uAttr);
 	addAttribute(aInRotateZ);
 
 	aInRotate = nAttr.create("rotate", "rotate", aInRotateX, aInRotateY, aInRotateZ, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setKeyable(true); nAttr.setStorable(true); nAttr.setWritable(true);
-	nAttr.setConnectable(true);
-
+	AS_INPUT(uAttr);
+	
 	aInScale = nAttr.createPoint("scale", "scale", &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setKeyable(true); nAttr.setStorable(true); nAttr.setWritable(true);
-	nAttr.setConnectable(true);
-
+	AS_INPUT(nAttr);
+	
 	cAttr.addChild(aInTranslate);
 	cAttr.addChild(aInRotate);
 	cAttr.addChild(aInScale);
@@ -148,14 +142,12 @@ MStatus MatrixConstant::initialize()
 	MFnMatrixAttribute mAttr;
 	aInMatrix = mAttr.create("matrix", "matrix", MFnMatrixAttribute::kDouble, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	mAttr.setKeyable(true); mAttr.setWritable(true); mAttr.setStorable(false);
-	mAttr.setConnectable(true);
+	AS_INPUT(mAttr);
 	addAttribute(aInMatrix);
 
 	aOutMatrix = mAttr.create("outMatrix", "outMatrix", MFnMatrixAttribute::kDouble, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	mAttr.setKeyable(false); mAttr.setWritable(false); mAttr.setStorable(false);
-	mAttr.setReadable(true);
+	AS_OUTPUT(mAttr);
 	addAttribute(aOutMatrix);
 
 	attributeAffects(aInMatrix, aOutMatrix);
@@ -228,21 +220,19 @@ MStatus MatrixBlend::initialize()
 
 	aMatrixInB = mAttr.create("matrixInB", "matrixInB", MFnMatrixAttribute::kDouble, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	mAttr.setKeyable(true); mAttr.setWritable(true); mAttr.setStorable(false);
-	mAttr.setConnectable(true);
+	AS_INPUT(mAttr);
 	addAttribute(aMatrixInB);
 
 	aBlend = nAttr.create("blend", "blend", MFnNumericData::kFloat, 0.0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setKeyable(true); nAttr.setWritable(true); nAttr.setStorable(false);
-	nAttr.setConnectable(true); nAttr.setMin(0); nAttr.setMax(1);
+	AS_INPUT(nAttr);
+	nAttr.setMin(0.0); nAttr.setMax(1.0);
 	addAttribute(aBlend);
 
 
 	aRotationOrder = eAttr.create("rotationOrder", "ro", 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	eAttr.setKeyable(true); eAttr.setConnectable(true); eAttr.setChannelBox(true);
-	eAttr.setWritable(true); eAttr.setStorable(false);
+	AS_INPUT(eAttr);
 	eAttr.addField("xyz", 0); eAttr.addField("yzx", 1); eAttr.addField("zxy", 2);
 	eAttr.addField("xzy", 3); eAttr.addField("yxz", 4); eAttr.addField("zyx", 5);
 	addAttribute(aRotationOrder);
@@ -250,16 +240,14 @@ MStatus MatrixBlend::initialize()
 	//outputs
 	aOutRotationOrder = eAttr.create("outRotationOrder", "oro", 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	eAttr.setKeyable(false); eAttr.setWritable(false); eAttr.setStorable(false);
-	eAttr.setReadable(true);
+	AS_OUTPUT(eAttr);
 	eAttr.addField("xyz", 0); eAttr.addField("yzx", 1); eAttr.addField("zxy", 2);
 	eAttr.addField("xzy", 3); eAttr.addField("yxz", 4); eAttr.addField("zyx", 5);
 	addAttribute(aOutRotationOrder);
 
 	aOutMatrix = mAttr.create("outMatrix", "outMatrix", MFnMatrixAttribute::kDouble, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	mAttr.setKeyable(false); mAttr.setWritable(false); mAttr.setStorable(false);
-	mAttr.setReadable(true);
+	AS_OUTPUT(mAttr);
 	addAttribute(aOutMatrix);
 
 	attributeAffects(aMatrixInA, aOutRotationOrder);
@@ -276,3 +264,4 @@ MStatus MatrixBlend::initialize()
 	return MS::kSuccess;
 }
 
+ 

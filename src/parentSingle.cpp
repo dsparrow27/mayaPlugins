@@ -98,119 +98,102 @@ MStatus ParentSingle::initialize()
 	
 	aParentInverse = mAttr.create("parentInverse", "pi", MFnMatrixAttribute::kDouble, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	mAttr.setKeyable(true); mAttr.setWritable(true); mAttr.setStorable(true);
-	mAttr.setConnectable(true);
+	AS_INPUT(mAttr);
 	addAttribute(aParentInverse);
 
 	aOffsetMatrix = mAttr.create("offsetMatrix", "om", MFnMatrixAttribute::kDouble, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	mAttr.setKeyable(true); mAttr.setWritable(true); mAttr.setStorable(true);
-	mAttr.setConnectable(true);
+	AS_INPUT(mAttr);
 	addAttribute(aOffsetMatrix);
 
 	aWorldMatrix = mAttr.create("worldMatrix", "wm", MFnMatrixAttribute::kDouble, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	mAttr.setKeyable(true); mAttr.setWritable(true); mAttr.setStorable(true);
-	mAttr.setConnectable(true);
+	AS_INPUT(mAttr);
 	addAttribute(aWorldMatrix);
+
 	aOutMatrix = mAttr.create("outMatrix", "outMatrix", MFnMatrixAttribute::kDouble, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setStorable(false); nAttr.setKeyable(false); nAttr.setWritable(false);
-	cAttr.setChannelBox(false);
+	AS_OUTPUT(mAttr);
 	addAttribute(aOutMatrix);
 
 	aRotationOrder = eAttr.create("rotationOrder", "ro", 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	eAttr.setKeyable(true); eAttr.setConnectable(true); eAttr.setChannelBox(true);
-	eAttr.setWritable(true); eAttr.setStorable(true);
+	AS_INPUT(eAttr);
 	eAttr.addField("xyz", 0);eAttr.addField("yzx", 1); eAttr.addField("zxy", 2);
 	eAttr.addField("xzy", 3);eAttr.addField("yxz", 4);eAttr.addField("zyx", 5);
 	addAttribute(aRotationOrder);
 
 	aNegateX = nAttr.create("negateX", "nx", MFnNumericData::kBoolean, 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setKeyable(true); nAttr.setConnectable(true); nAttr.setChannelBox(true);
-	nAttr.setWritable(true); nAttr.setStorable(true);
+	AS_INPUT(nAttr);
 	addAttribute(aNegateX);
 
 	aNegateY = nAttr.create("negateY", "ny", MFnNumericData::kBoolean, 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setKeyable(true); nAttr.setConnectable(true); nAttr.setChannelBox(true);
-	nAttr.setWritable(true); nAttr.setStorable(true);
+	AS_INPUT(nAttr);
 	addAttribute(aNegateY);
 
 	aNegateZ = nAttr.create("negateZ", "nz", MFnNumericData::kBoolean, 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setKeyable(true); nAttr.setConnectable(true); nAttr.setChannelBox(true);
-	nAttr.setWritable(true); nAttr.setStorable(true);
+	AS_INPUT(nAttr);
 	addAttribute(aNegateZ);
 	
 	//outputs
 	aOutRotationOrder = eAttr.create("outRotationOrder", "oro", 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	eAttr.setKeyable(false); eAttr.setWritable(false); eAttr.setStorable(false);
+	AS_OUTPUT(eAttr);
 	eAttr.addField("xyz", 0);eAttr.addField("yzx", 1);eAttr.addField("zxy", 2);
 	eAttr.addField("xzy", 3);eAttr.addField("yxz", 4);eAttr.addField("zyx", 5);
 	addAttribute(aOutRotationOrder);
 
 	aOutSrt = cAttr.create("outSrt", "osrt", &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	cAttr.setChannelBox(false); nAttr.setKeyable(false); nAttr.setStorable(false);
-	nAttr.setWritable(false);
+	AS_OUTPUT(cAttr);
 	
 	
 	aOutTranslateX = nAttr.create("outTranslateX", "outTranslateX", MFnNumericData::kDouble, 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setStorable(false); nAttr.setKeyable(false); nAttr.setWritable(false);
-	cAttr.setChannelBox(false);
+	AS_OUTPUT(nAttr);
 	addAttribute(aOutTranslateX);
 
 	aOutTranslateY= nAttr.create("outTranslateY", "outTranslateY", MFnNumericData::kDouble, 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setStorable(false); nAttr.setKeyable(false); nAttr.setWritable(false);
-	cAttr.setChannelBox(false);
+	AS_OUTPUT(nAttr)
 	addAttribute(aOutTranslateY);
 
 	aOutTranslateZ = nAttr.create("outTranslateZ", "outTranslateZ", MFnNumericData::kDouble, 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setStorable(false); nAttr.setKeyable(false); nAttr.setWritable(false);
-	cAttr.setChannelBox(false);
+	AS_OUTPUT(nAttr);
 	addAttribute(aOutTranslateZ);
 
 	aOutTranslate = nAttr.create("outTranslate", "outTranslate", aOutTranslateX, aOutTranslateY, aOutTranslateZ, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setKeyable(false); nAttr.setStorable(false); nAttr.setWritable(false);
-	cAttr.setChannelBox(false);
-
+	AS_OUTPUT(nAttr);
+	
 
 	aOutRotateX = uAttr.create("outRotateX", "orx", MFnUnitAttribute::kAngle, 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	uAttr.setStorable(false); uAttr.setKeyable(false); uAttr.setWritable(false);
-	cAttr.setChannelBox(false);
+	AS_OUTPUT(uAttr);
 	addAttribute(aOutRotateX);
 
 	aOutRotateY = uAttr.create("outRotateY", "ory", MFnUnitAttribute::kAngle, 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	uAttr.setStorable(false); uAttr.setKeyable(false); uAttr.setWritable(false);
-	cAttr.setChannelBox(false);
+	AS_OUTPUT(uAttr);
 	addAttribute(aOutRotateY);
 
 	aOutRotateZ = uAttr.create("outRotateZ", "orz", MFnUnitAttribute::kAngle, 0, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	uAttr.setStorable(false); uAttr.setKeyable(false); uAttr.setWritable(false);
-	cAttr.setChannelBox(false);
+	AS_OUTPUT(uAttr);
 	addAttribute(aOutRotateZ);
 
 	aOutRotate = nAttr.create("outRotate", "or", aOutRotateX, aOutRotateY, aOutRotateZ, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setKeyable(false); nAttr.setStorable(false); nAttr.setWritable(false);
-	cAttr.setChannelBox(false);
+	AS_OUTPUT(nAttr);
 
 	aOutScale = nAttr.createPoint("outScale", "os", &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-	nAttr.setKeyable(false); nAttr.setStorable(false); nAttr.setWritable(false);
-	cAttr.setChannelBox(false);
-	
+	AS_OUTPUT(nAttr);
+
 	cAttr.addChild(aOutTranslate);
 	cAttr.addChild(aOutRotate);
 	cAttr.addChild(aOutScale);

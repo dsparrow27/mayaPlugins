@@ -232,9 +232,6 @@ public:
 	static MObject aNewMax;
 };
 
-
-//sign
-//negate
 class Negate : public MPxNode
 {
 public:

@@ -13,7 +13,7 @@
 #include "aimNode.h"
 
 const char* kAUTHOR = "David Sparrow";
-const char* kVERSION = "1.1.0";
+const char* kVERSION = "2.0.0";
 const char* kREQUIRED_API_VERSION = "Any";
 
 MTypeId Sum::kId = mayaIds::SUM_ID;
@@ -46,7 +46,6 @@ MTypeId AngularCosine::kId = mayaIds::ANGULARCOSINE_ID;
 MTypeId AngularTan::kId = mayaIds::ANGULARTAN_ID;
 MTypeId MatrixBlend::kId = mayaIds::MATRIXBLEND_ID;
 MTypeId MatrixConstant::kId = mayaIds::MATRIXCONSTANT_ID;
-MTypeId MetaNode::kId = mayaIds::METANODE_ID;
 MTypeId MetaSubSystem::kId = mayaIds::METARIGSYSTEMCONSTANT_ID;
 MTypeId MetaSupportSystem::kId = mayaIds::METASUPPORTSYSTEMCONSTANT_ID;
 MTypeId MetaRigSystem::kId = mayaIds::METARIGSYSTEMCONSTANT_ID;
@@ -62,6 +61,20 @@ MTypeId XGroupLayer::kId = mayaIds::XGROUPLAYERCONSTANT_ID;
 MTypeId SettingsNode::kId = mayaIds::SETTINGSNODECONSTANT_ID;
 MTypeId ControlPanel::kId = mayaIds::CONTROLPANELCONSTANT_ID;
 MTypeId Negate::kId = mayaIds::NEGATE_ID;
+MTypeId AngularSum::kId = mayaIds::ANGULARSUM_ID;
+MTypeId AngularSubstract::kId = mayaIds::ANGULARSUBSTRACT_ID;
+MTypeId AngularMultiply::kId = mayaIds::ANGULARMULTIPLY_ID;
+MTypeId AngularDivide::kId = mayaIds::ANGULARDIVIDE_ID;
+MTypeId AngularPower::kId = mayaIds::ANGULARPOWER_ID;
+MTypeId AngularClamp::kId = mayaIds::ANGULARCLAMP_ID;
+MTypeId AngularFloor::kId = mayaIds::ANGULARFLOOR_ID;
+MTypeId AngularCeiling::kId = mayaIds::ANGULARCEILING_ID;
+MTypeId AngularRound::kId = mayaIds::ANGULARROUND_ID;
+MTypeId AngularTruncate::kId = mayaIds::ANGULARTRUNCATE_ID;
+MTypeId AngularBlendPair::kId = mayaIds::ANGULARBLENDPAIR_ID;
+MTypeId AngularGaussian::kId = mayaIds::ANGULARGAUSSIAN_ID;
+MTypeId AngularRemap::kId = mayaIds::ANGULARREMAP_ID;
+MTypeId AngularNegate::kId = mayaIds::ANGULARNEGATE_ID;
 
 MString Substract::kName = "ds_substract";
 MString Sum::kName = "ds_sum";
@@ -93,7 +106,6 @@ MString AngularCosine::kName = "ds_angularCosine";
 MString AngularTan::kName = "ds_angularTan";
 MString MatrixBlend::kName = "ds_MatrixBlend";
 MString MatrixConstant::kName = "ds_MatrixConstant";
-MString MetaNode::kName = "ds_metaNode";
 MString MetaSubSystem::kName = "ds_metaSubSystem";
 MString MetaSupportSystem::kName = "ds_metaSupportSystem";
 MString MetaRigSystem::kName = "ds_metaRigSystem";
@@ -109,7 +121,20 @@ MString XGroupLayer::kName = "ds_xGroupLayer";
 MString SettingsNode::kName = "ds_settingsNode";
 MString ControlPanel::kName = "ds_controlPanel";
 MString Negate::kName = "ds_negate";
-
+MString AngularSum::kName = "ds_angularSum";
+MString AngularSubstract::kName = "ds_angularSubstract";
+MString AngularMultiply::kName = "ds_angularMultiply";
+MString AngularDivide::kName = "ds_angularDivide";
+MString AngularPower::kName = "ds_angularPower";
+MString AngularClamp::kName = "ds_angularClamp";
+MString AngularFloor::kName = "ds_angularFloor";
+MString AngularCeiling::kName = "ds_angularCeiling";
+MString AngularRound::kName = "ds_angularRound";
+MString AngularTruncate::kName = "ds_angularTruncate";
+MString AngularBlendPair::kName = "ds_angularBlendPair";
+MString AngularGaussian::kName = "ds_angularGaussian";
+MString AngularRemap::kName = "ds_angularRemap";
+MString AngularNegate::kName = "ds_angularNegate";
 
 #define REGISTER_NODE(NODE, TYPE)	\
     status = fnPlugin.registerNode(NODE::kName,NODE::kId,NODE::creator, NODE::initialize, TYPE);	\
@@ -119,9 +144,9 @@ MString Negate::kName = "ds_negate";
     status = fnPlugin.deregisterNode(NODE::kId);	\
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-#define REGISTER_TRANSFORM(NODE, TYPE)	\
-	status = fnPlugin.registerTransform(NODE::kName, NODE::kId, NODE::creator, NODE::initialize, NODE::creator, NODE::kId); 	\
-	CHECK_MSTATUS_AND_RETURN_IT(status);
+//#define REGISTER_TRANSFORM(NODE, TYPE)	\
+//	status = fnPlugin.registerTransform(NODE::kName, NODE::kId, NODE::creator, NODE::initialize); 	\
+//	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
 MStatus initializePlugin(MObject obj)
@@ -165,15 +190,28 @@ MStatus initializePlugin(MObject obj)
 	REGISTER_NODE(RootNode, MPxNode::kDependNode);
 	REGISTER_NODE(SettingsNode, MPxNode::kDependNode);
 	REGISTER_NODE(ControlPanel, MPxNode::kDependNode);
-	REGISTER_TRANSFORM(ComponentLayer);
-	REGISTER_TRANSFORM(RigLayer);
-	REGISTER_TRANSFORM(DeformLayer);
-	REGISTER_TRANSFORM(GuideLayer);
-	REGISTER_TRANSFORM(InputLayer);
-	REGISTER_TRANSFORM(OutputLayer);
-	REGISTER_TRANSFORM(XGroupLayer);
+	//REGISTER_TRANSFORM(ComponentLayer);
+	//REGISTER_TRANSFORM(RigLayer);
+	//REGISTER_TRANSFORM(DeformLayer);
+	//REGISTER_TRANSFORM(GuideLayer);
+	//REGISTER_TRANSFORM(InputLayer);
+	//REGISTER_TRANSFORM(OutputLayer);
+	//REGISTER_TRANSFORM(XGroupLayer);
 	REGISTER_NODE(Negate, MPxNode::kDependNode);
-
+	REGISTER_NODE(AngularSum, MPxNode::kDependNode);
+	REGISTER_NODE(AngularSubstract, MPxNode::kDependNode);
+	REGISTER_NODE(AngularMultiply, MPxNode::kDependNode);
+	REGISTER_NODE(AngularDivide, MPxNode::kDependNode);
+	REGISTER_NODE(AngularPower, MPxNode::kDependNode);
+	REGISTER_NODE(AngularClamp, MPxNode::kDependNode);
+	REGISTER_NODE(AngularFloor, MPxNode::kDependNode);
+	REGISTER_NODE(AngularCeiling, MPxNode::kDependNode);
+	REGISTER_NODE(AngularRound, MPxNode::kDependNode);
+	REGISTER_NODE(AngularTruncate, MPxNode::kDependNode);
+	REGISTER_NODE(AngularBlendPair, MPxNode::kDependNode);
+	REGISTER_NODE(AngularGaussian, MPxNode::kDependNode);
+	REGISTER_NODE(AngularRemap, MPxNode::kDependNode);
+	REGISTER_NODE(AngularNegate, MPxNode::kDependNode);
 
 	return MS::kSuccess;
 }
@@ -218,15 +256,23 @@ MStatus uninitializePlugin(MObject obj)
 	DEREGISTER_NODE(RootNode);
 	DEREGISTER_NODE(SettingsNode);
 	DEREGISTER_NODE(ControlPanel);
-	DEREGISTER_NODE(ComponentLayer);
-	DEREGISTER_NODE(RigLayer);
-	DEREGISTER_NODE(DeformLayer);
-	DEREGISTER_NODE(GuideLayer);
-	DEREGISTER_NODE(InputLayer);
-	DEREGISTER_NODE(OutputLayer);
-	DEREGISTER_NODE(XGroupLayer);
+	//DEREGISTER_NODE(ComponentLayer);
+	//DEREGISTER_NODE(RigLayer);
+	//DEREGISTER_NODE(DeformLayer);
+	//DEREGISTER_NODE(GuideLayer);
+	//DEREGISTER_NODE(InputLayer);
+	//DEREGISTER_NODE(OutputLayer);
+	//DEREGISTER_NODE(XGroupLayer);
 	DEREGISTER_NODE(Negate);
-
+	DEREGISTER_NODE(AngularSum);
+	DEREGISTER_NODE(AngularSubstract);
+	DEREGISTER_NODE(AngularMultiply);
+	DEREGISTER_NODE(AngularDivide);
+	DEREGISTER_NODE(AngularPower);
+	DEREGISTER_NODE(AngularClamp);
+	DEREGISTER_NODE(AngularFloor);
+	DEREGISTER_NODE(AngularCeiling);
+	DEREGISTER_NODE(AngularRound);
 	return MS::kSuccess;
 
 }

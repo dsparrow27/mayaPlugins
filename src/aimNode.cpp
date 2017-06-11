@@ -1,5 +1,5 @@
 #include "aimNode.h"
-
+#include "utils.h"
 
 // node id 
 MObject AimNode::aInputTranslate;
@@ -83,15 +83,11 @@ MStatus AimNode::initialize()
 	MFnUnitAttribute uAttr;
 
 	aDriverMatrix = mAttr.create("driverMatrix", "dvm");
-	mAttr.setStorable(true);
-	mAttr.setKeyable(true);
-	mAttr.setWritable(true);
+	AS_INPUT(mAttr);
 	addAttribute(aDriverMatrix);
 
 	aUpVectorMatrix = mAttr.create("upVectorMatrix", "uvm");
-	mAttr.setStorable(true);
-	mAttr.setKeyable(true);
-	mAttr.setWritable(true);
+	AS_INPUT(mAttr);
 	addAttribute(aUpVectorMatrix);
 
 	//translateX
@@ -101,18 +97,18 @@ MStatus AimNode::initialize()
 	
 	//rotateX
 	aOutputRotateX = uAttr.create("rotateX", "rx", MFnUnitAttribute::kAngle, 0);
-	nAttr.setStorable(true);
-	nAttr.setKeyable(true);
-	nAttr.setWritable(true);
+	AS_OUTPUT(uAttr);
 	addAttribute(aOutputRotateX);
 	//rotateY
 	aOutputRotateY = uAttr.create("rotateY", "ry", MFnUnitAttribute::kAngle, 0);
+	AS_OUTPUT(uAttr);
 	nAttr.setStorable(true);
 	nAttr.setKeyable(true);
 	nAttr.setWritable(true);
 	addAttribute(aOutputRotateY);
 	//rotateZ
 	aOutputRotateZ = uAttr.create("rotateZ", "rz", MFnUnitAttribute::kAngle, 0);
+	AS_OUTPUT(uAttr);
 	nAttr.setStorable(true);
 	nAttr.setKeyable(true);
 	nAttr.setWritable(true);
@@ -123,6 +119,7 @@ MStatus AimNode::initialize()
 
 	//parent inverse matrix
 	aParentInverseMatrix = mAttr.create("parentInverse", "parinv");
+	AS_INPUT(mAttr);
 	mAttr.setDefault(MMatrix::identity);
 	addAttribute(aParentInverseMatrix);
 

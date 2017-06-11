@@ -839,6 +839,7 @@ MStatus Negate::compute(const MPlug& plug, MDataBlock& dataBlock)
 		inResult.setAllClean();
 		status = MS::kSuccess;
 	}
+	return status;
 
 }
 MStatus Negate::initialize()

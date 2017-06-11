@@ -44,7 +44,10 @@ using namespace utils;
 	{
 		return (goal * blend) + ((1.0 - blend) * current);
 	}
-
+	double utils::lerp(double goal, double current, double blend)
+	{
+		return (goal * blend) + ((1.0 - blend) * current);
+	}
 	MVector utils::lerp(MVector goal, MVector current, float blend)
 	{
 		return (goal * blend) + ((1.0 - blend) * current);
