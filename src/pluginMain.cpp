@@ -46,7 +46,7 @@ MTypeId AngularCosine::kId = mayaIds::ANGULARCOSINE_ID;
 MTypeId AngularTan::kId = mayaIds::ANGULARTAN_ID;
 MTypeId MatrixBlend::kId = mayaIds::MATRIXBLEND_ID;
 MTypeId MatrixConstant::kId = mayaIds::MATRIXCONSTANT_ID;
-MTypeId MetaSubSystem::kId = mayaIds::METARIGSYSTEMCONSTANT_ID;
+MTypeId MetaSubSystem::kId = mayaIds::METASUBSYSTEMCONSTANT_ID;
 MTypeId MetaSupportSystem::kId = mayaIds::METASUPPORTSYSTEMCONSTANT_ID;
 MTypeId MetaRigSystem::kId = mayaIds::METARIGSYSTEMCONSTANT_ID;
 MTypeId MetaFaceSystem::kId = mayaIds::METAFACESYSTEMCONSTANT_ID;
@@ -144,9 +144,9 @@ MString AngularNegate::kName = "ds_angularNegate";
     status = fnPlugin.deregisterNode(NODE::kId);	\
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-//#define REGISTER_TRANSFORM(NODE, TYPE)	\
-//	status = fnPlugin.registerTransform(NODE::kName, NODE::kId, NODE::creator, NODE::initialize); 	\
-//	CHECK_MSTATUS_AND_RETURN_IT(status);
+#define REGISTER_TRANSFORM(NODE)	\
+	status = fnPlugin.registerTransform(NODE::kName, NODE::kId, NODE::creator, NODE::initialize,  MPxTransformationMatrix::creator, MPxTransformationMatrix::baseTransformationMatrixId); 	\
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
 MStatus initializePlugin(MObject obj)
@@ -163,6 +163,7 @@ MStatus initializePlugin(MObject obj)
 	REGISTER_NODE(Ceiling, MPxNode::kDependNode);
 	REGISTER_NODE(Round, MPxNode::kDependNode);
 	REGISTER_NODE(Truncate, MPxNode::kDependNode);
+	REGISTER_NODE(Negate, MPxNode::kDependNode);
 	REGISTER_NODE(PushDeformer, MPxNode::kDeformerNode);
 	REGISTER_NODE(PointOnCurve, MPxNode::kDependNode);
 	REGISTER_NODE(MetaNode, MPxNode::kDependNode);
@@ -183,21 +184,25 @@ MStatus initializePlugin(MObject obj)
 	REGISTER_NODE(AngularTan, MPxNode::kDependNode);
 	REGISTER_NODE(MatrixBlend, MPxNode::kDependNode);
 	REGISTER_NODE(MatrixConstant, MPxNode::kDependNode);
-	REGISTER_NODE(MetaSubSystem, MPxNode::kDependNode);
+
 	REGISTER_NODE(MetaSupportSystem, MPxNode::kDependNode);
+	REGISTER_NODE(MetaSubSystem, MPxNode::kDependNode);
 	REGISTER_NODE(MetaRigSystem, MPxNode::kDependNode);
 	REGISTER_NODE(MetaFaceSystem, MPxNode::kDependNode);
+
 	REGISTER_NODE(RootNode, MPxNode::kDependNode);
 	REGISTER_NODE(SettingsNode, MPxNode::kDependNode);
 	REGISTER_NODE(ControlPanel, MPxNode::kDependNode);
-	//REGISTER_TRANSFORM(ComponentLayer);
-	//REGISTER_TRANSFORM(RigLayer);
-	//REGISTER_TRANSFORM(DeformLayer);
-	//REGISTER_TRANSFORM(GuideLayer);
-	//REGISTER_TRANSFORM(InputLayer);
-	//REGISTER_TRANSFORM(OutputLayer);
-	//REGISTER_TRANSFORM(XGroupLayer);
-	REGISTER_NODE(Negate, MPxNode::kDependNode);
+
+	REGISTER_TRANSFORM(ComponentLayer);
+	REGISTER_TRANSFORM(RigLayer);
+	REGISTER_TRANSFORM(DeformLayer);
+	REGISTER_TRANSFORM(GuideLayer);
+	REGISTER_TRANSFORM(InputLayer);
+	REGISTER_TRANSFORM(OutputLayer);
+	REGISTER_TRANSFORM(XGroupLayer);
+
+
 	REGISTER_NODE(AngularSum, MPxNode::kDependNode);
 	REGISTER_NODE(AngularSubstract, MPxNode::kDependNode);
 	REGISTER_NODE(AngularMultiply, MPxNode::kDependNode);
@@ -212,7 +217,7 @@ MStatus initializePlugin(MObject obj)
 	REGISTER_NODE(AngularGaussian, MPxNode::kDependNode);
 	REGISTER_NODE(AngularRemap, MPxNode::kDependNode);
 	REGISTER_NODE(AngularNegate, MPxNode::kDependNode);
-
+	
 	return MS::kSuccess;
 }
 
@@ -230,6 +235,7 @@ MStatus uninitializePlugin(MObject obj)
 	DEREGISTER_NODE(Ceiling);
 	DEREGISTER_NODE(Round);
 	DEREGISTER_NODE(Truncate);
+	DEREGISTER_NODE(Negate);
 	DEREGISTER_NODE(PushDeformer);
 	DEREGISTER_NODE(MetaNode);
 	DEREGISTER_NODE(BlendPair);
@@ -249,21 +255,26 @@ MStatus uninitializePlugin(MObject obj)
 	DEREGISTER_NODE(AngularTan);
 	DEREGISTER_NODE(MatrixBlend);
 	DEREGISTER_NODE(MatrixConstant);
-	DEREGISTER_NODE(MetaSubSystem);
+
 	DEREGISTER_NODE(MetaSupportSystem);
+	DEREGISTER_NODE(MetaSubSystem);
 	DEREGISTER_NODE(MetaRigSystem);
 	DEREGISTER_NODE(MetaFaceSystem);
+
 	DEREGISTER_NODE(RootNode);
 	DEREGISTER_NODE(SettingsNode);
 	DEREGISTER_NODE(ControlPanel);
-	//DEREGISTER_NODE(ComponentLayer);
-	//DEREGISTER_NODE(RigLayer);
-	//DEREGISTER_NODE(DeformLayer);
-	//DEREGISTER_NODE(GuideLayer);
-	//DEREGISTER_NODE(InputLayer);
-	//DEREGISTER_NODE(OutputLayer);
-	//DEREGISTER_NODE(XGroupLayer);
-	DEREGISTER_NODE(Negate);
+	
+
+	DEREGISTER_NODE(ComponentLayer);
+	DEREGISTER_NODE(RigLayer);
+	DEREGISTER_NODE(DeformLayer);
+	DEREGISTER_NODE(GuideLayer);
+	DEREGISTER_NODE(InputLayer);
+	DEREGISTER_NODE(OutputLayer);
+	DEREGISTER_NODE(XGroupLayer);
+
+
 	DEREGISTER_NODE(AngularSum);
 	DEREGISTER_NODE(AngularSubstract);
 	DEREGISTER_NODE(AngularMultiply);
@@ -273,6 +284,7 @@ MStatus uninitializePlugin(MObject obj)
 	DEREGISTER_NODE(AngularFloor);
 	DEREGISTER_NODE(AngularCeiling);
 	DEREGISTER_NODE(AngularRound);
+
 	return MS::kSuccess;
 
 }
