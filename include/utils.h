@@ -1,4 +1,5 @@
 #pragma once
+#define _USE_MATH_DEFINES
 
 #include "maya/MTransformationMatrix.h"
 #include "maya/MFnNumericData.h"
@@ -7,6 +8,9 @@
 #include "maya/MString.h"
 #include "maya/MVector.h"
 #include "maya/MQuaternion.h"
+
+#include <cmath>
+
 
 #define AS_INPUT(attr)        \
     attr.setKeyable(true);      \
